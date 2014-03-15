@@ -54,9 +54,11 @@
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
-					<url>http://teste1.localhost:8080/manager</url>
+					<url>http://localhost:8080/manager/text</url>
 					<server>TomcatServer</server>
 					<path>/TesteCas</path>
+					<username>tomcat</username>
+					<password>tomcat1234</password>
 				</configuration>
 			</plugin>
 		</plugins>
