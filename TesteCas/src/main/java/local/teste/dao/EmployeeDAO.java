@@ -41,7 +41,7 @@ public class EmployeeDAO {
 		elapsedTime = System.currentTimeMillis();
 		Query query = entityManager.createQuery("FROM "
 				+ Employee.class.getName());
-		query.setMaxResults(300000);
+		query.setMaxResults(100000);
 
 		List<Employee> result = query.getResultList();
 		elapsedTime = System.currentTimeMillis() - elapsedTime;
