@@ -19,7 +19,7 @@ public class EmployeeListPage extends WebPage {
 	public EmployeeListPage() {
 		EmployeeDAO dao = new EmployeeDAO();
 
-		Iterator<Employee> employees = dao.findAll().iterator();
+		Iterator<Employee> employees = dao.listaTeste().iterator();
 
 		RepeatingView repeating = new RepeatingView("repeating");
 		add(repeating);

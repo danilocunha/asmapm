@@ -10,6 +10,7 @@ import javax.persistence.Query;
 import org.hibernate.Criteria;
 
 import local.teste.entity.Employee;
+import local.teste.monitor.TaskMonitor;
 import local.teste.util.ObjectSizeFetcher;
 
 public class EmployeeDAO {
@@ -22,12 +23,7 @@ public class EmployeeDAO {
 	private EntityManager getEntityManager() {
 		EntityManagerFactory factory = Persistence
 				.createEntityManagerFactory("EmployeePU");
-		try {
-			Thread.sleep(1200);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 		if (entityManager == null) {
 			entityManager = factory.createEntityManager();
 		}
@@ -35,23 +31,54 @@ public class EmployeeDAO {
 		return entityManager;
 	}
 
+	public List<Employee> listaTeste() {
+		TaskMonitor.getInstance().addCall(Thread.currentThread().getId(), Thread.currentThread().getStackTrace()[1].getMethodName());
+		timerA();
+		timerB();
+		TaskMonitor.getInstance().removeCall(Thread.currentThread().getId());
+		return findAll();
+		
+	}
+	
+
+	public void timerA() {
+		try {
+			Thread.sleep(2500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+public void timerB() {
+	try {
+		Thread.sleep(500);
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	}
+
 	@SuppressWarnings("unchecked")
 	public List<Employee> findAll() {
-		long elapsedTime;
-		elapsedTime = System.currentTimeMillis();
+		
 		Query query = entityManager.createQuery("FROM "
 				+ Employee.class.getName());
 		query.setMaxResults(100000);
-
+		try {
+			Thread.sleep(1200);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		List<Employee> result = query.getResultList();
-		elapsedTime = System.currentTimeMillis() - elapsedTime;
-		System.out.println("[MANUAL] Method " + this.getClass().getName()
-				+ " Executed in ms: " + elapsedTime);
+		
 		/*
 		 * try { System.out.println(ObjectSizeFetcher.sizeOf(result)/1024/1024);
 		 * } catch (IllegalAccessException e) { // TODO Auto-generated catch
 		 * block e.printStackTrace(); }
 		 */
+		
 		return result;
 	}
 
