@@ -33,10 +33,11 @@ public class EmployeeDAO {
 
 	public List<Employee> listaTeste() {
 		TaskMonitor.getInstance().addCall(Thread.currentThread().getId(), Thread.currentThread().getStackTrace()[1].getMethodName());
-		timerA();
-		timerB();
+		//timerA();
+		//timerB();
+		List<Employee> result = findAll();
 		TaskMonitor.getInstance().removeCall(Thread.currentThread().getId());
-		return findAll();
+		return result;
 		
 	}
 	
@@ -64,13 +65,8 @@ public void timerB() {
 		
 		Query query = entityManager.createQuery("FROM "
 				+ Employee.class.getName());
-		query.setMaxResults(100000);
-		try {
-			Thread.sleep(1200);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		query.setMaxResults(100);
+		
 		List<Employee> result = query.getResultList();
 		
 		/*
