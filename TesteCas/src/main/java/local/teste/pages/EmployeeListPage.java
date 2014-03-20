@@ -14,12 +14,24 @@ import org.apache.wicket.markup.html.list.AbstractItem;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.string.StringValue;
 
 public class EmployeeListPage extends WebPage {
-	public EmployeeListPage() {
+	
+	public EmployeeListPage(PageParameters parameters) {
 		EmployeeDAO dao = new EmployeeDAO();
 
-		Iterator<Employee> employees = dao.listaTeste().iterator();
+		Iterator<Employee> employees;
+		StringValue sendtotaskmanager = parameters.get("sendtotaskmanager");
+		if(sendtotaskmanager.toString().equals("1")) {
+		  employees = dao.listaTeste().iterator();
+		  System.out.println("Send to Task Manager");
+		} else {
+		  employees = dao.findAll().iterator();
+		  System.out.println("NOT Send to Task Manager");
+		}
 
 		RepeatingView repeating = new RepeatingView("repeating");
 		add(repeating);

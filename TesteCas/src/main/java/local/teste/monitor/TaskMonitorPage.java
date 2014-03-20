@@ -3,8 +3,7 @@ package local.teste.monitor;
 import java.util.Iterator;
 import java.util.Map;
 
-import local.teste.dao.EmployeeDAO;
-import local.teste.entity.Employee;
+import local.teste.util.ObjectSizeFetcher;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebPage;
@@ -17,7 +16,6 @@ public class TaskMonitorPage extends WebPage {
 
 	public TaskMonitorPage() {
 		
-
 		Iterator iter = TaskMonitor.getInstance().getHashMap().entrySet().iterator();
 
 		RepeatingView repeating = new RepeatingView("repeating");
@@ -51,7 +49,15 @@ public class TaskMonitorPage extends WebPage {
             if(index==10) {
             	break;
             }
+            
+            
         }
+		try {
+			System.out.println(ObjectSizeFetcher.sizeOf(TaskMonitor.getInstance().getHashMap())/1024/1024);
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

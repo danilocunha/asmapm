@@ -68,7 +68,7 @@ public void timerB() {
 		query.setMaxResults(100);
 		
 		List<Employee> result = query.getResultList();
-		
+		entityManager.close();
 		/*
 		 * try { System.out.println(ObjectSizeFetcher.sizeOf(result)/1024/1024);
 		 * } catch (IllegalAccessException e) { // TODO Auto-generated catch
