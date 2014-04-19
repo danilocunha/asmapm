@@ -5,7 +5,7 @@
 <web-app>
 	<display-name>TesteCas</display-name>
 
-	<filter>
+	<!-- <filter>
 		<filter-name>CAS Authentication Filter</filter-name>
 		<filter-class>org.jasig.cas.client.authentication.Saml11AuthenticationFilter</filter-class>
 		<init-param>
@@ -17,13 +17,9 @@
 			<param-value>http://localhost:8080</param-value>
 		</init-param>
 		<init-param>
-			<param-name>renew</param-name>
-			<param-value>false</param-value>
-		</init-param>
-		<init-param>
-			<param-name>gateway</param-name>
-			<param-value>false</param-value>
-		</init-param>
+            <param-name>redirectAfterValidation</param-name>
+            <param-value>true</param-value>
+        </init-param>
 	</filter>
 	<filter>
 		<filter-name>CAS Validation Filter</filter-name>
@@ -36,14 +32,7 @@
 			<param-name>serverName</param-name>
 			<param-value>http://localhost:8080</param-value>
 		</init-param>
-		<init-param>
-			<param-name>proxyCallbackUrl</param-name>
-			<param-value>https://localhost:8080/proxyCallback</param-value>
-		</init-param>
-		<init-param>
-			<param-name>proxyReceptorUrl</param-name>
-			<param-value>/proxyCallback</param-value>
-		</init-param>
+		
 	</filter>
 	<filter-mapping>
 		<filter-name>CAS Authentication Filter</filter-name>
@@ -56,18 +45,26 @@
 	<filter-mapping>
 		<filter-name>CAS Validation Filter</filter-name>
 		<url-pattern>/proxyCallback</url-pattern>
+	</filter-mapping> -->
+	<filter>
+		<filter-name>HelloWorldApplication</filter-name>
+		<filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
+		<init-param>
+			<param-name>applicationClassName</param-name>
+			<param-value>local.teste.HelloWorldApplication</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>HelloWorldApplication</filter-name>
+		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	<!-- <filter> <filter-name>HelloWorldApplication</filter-name> <filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class> 
-		<init-param> <param-name>applicationClassName</param-name> <param-value>local.teste.HelloWorldApplication</param-value> 
-		</init-param> </filter> <filter-mapping> <filter-name>HelloWorldApplication</filter-name> 
-		<url-pattern>/*</url-pattern> </filter-mapping> -->
 
-	<listener>
+	<!-- <listener>
 		<listener-class>sessionmon.SessionListener</listener-class>
 	</listener>
 	<listener>
 		<listener-class>sessionmon.SessionAttributeListener</listener-class>
-	</listener>
+	</listener> -->
 	<servlet>
 		<servlet-name>SessionMonServlet</servlet-name>
 		<servlet-class>sessionmon.SessionMonServlet</servlet-class>

@@ -15,11 +15,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.jasig.cas</groupId>
-			<artifactId>cas-client-core</artifactId>
-			<version>3.1.10</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket</artifactId>
 			<version>6.13.0</version>
@@ -65,6 +60,22 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.14</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jasig.cas.client</groupId>
+			<artifactId>cas-client-core</artifactId>
+			<version>3.1.12</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax-servlet</groupId>
+					<artifactId>servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.6</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>TesteCas</finalName>
@@ -86,30 +97,30 @@
 					<password>tomcat1234</password>
 					<update>true</update>
 				</configuration>
-			</plugin>		
+			</plugin>
 		</plugins>
-		 <resources>
-        <resource>
-            <filtering>false</filtering>
-            <directory>src/main/resources</directory>            
-        </resource>
-        <resource>
-            <filtering>false</filtering>            
-            <directory>/WebContent</directory>
-            <includes>
-                <include>**</include>
-            </includes>
-        </resource>
-        <resource>
-            <filtering>false</filtering>
-            <directory>src/main/java</directory>
-            <includes>
-                <include>**</include>
-            </includes>
-            <excludes>
-                <exclude>**/*.java</exclude>
-            </excludes>
-        </resource>
-    </resources>
+		<resources>
+			<resource>
+				<filtering>false</filtering>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<filtering>false</filtering>
+				<directory>/WebContent</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+			</resource>
+			<resource>
+				<filtering>false</filtering>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+		</resources>
 	</build>
 </project>
