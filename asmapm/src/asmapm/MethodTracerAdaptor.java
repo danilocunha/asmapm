@@ -38,14 +38,14 @@ public class MethodTracerAdaptor extends AdviceAdapter {
 	@Override
 	protected void onMethodExit(int opcode) {
 
-		super.visitLdcInsn(this.cName);
+		/*super.visitLdcInsn(this.cName);
 		super.visitLdcInsn(this.mName);
 		super.visitVarInsn(LLOAD, time);
 		super.visitMethodInsn(Opcodes.INVOKESTATIC,
 				 "asmapm/Agent", "testefunc",
 				 "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V");
 		
-		super.onMethodExit(opcode);
+		super.onMethodExit(opcode);*/
 		//System.out.println("Passei por aqui no onExit");
 		//super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","testefunc", "()V");
 		/*
