@@ -26,9 +26,11 @@ public class MethodTracerAdaptor extends AdviceAdapter {
 	@Override
 	protected void onMethodEnter() {				
 		time = newLocal(Type.LONG_TYPE);  
-		super.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J");			
+		//super.visitVarInsn(LLOAD, time);
+		super.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J");
+		visitInsn(LSUB);
 		visitVarInsn(LSTORE, time);		
-		System.out.println("Method Enter: " + this.cName + "::" + this.mName);
+		//System.out.println("Method Enter: " + this.cName + "::" + this.mName);
 		//super.visitLdcInsn(this.cName);
 		//super.visitLdcInsn(this.mName);
 		//super.visitVarInsn(LLOAD, time);
@@ -38,14 +40,16 @@ public class MethodTracerAdaptor extends AdviceAdapter {
 	@Override
 	protected void onMethodExit(int opcode) {
 
-		/*super.visitLdcInsn(this.cName);
+		super.visitLdcInsn(this.cName);
 		super.visitLdcInsn(this.mName);
 		super.visitVarInsn(LLOAD, time);
+		super.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J");
+		visitInsn(LADD);
 		super.visitMethodInsn(Opcodes.INVOKESTATIC,
 				 "asmapm/Agent", "testefunc",
-				 "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V");
+				 "(Ljava/lang/String;Ljava/lang/String;J)V");
 		
-		super.onMethodExit(opcode);*/
+		super.onMethodExit(opcode);
 		//System.out.println("Passei por aqui no onExit");
 		//super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","testefunc", "()V");
 		/*

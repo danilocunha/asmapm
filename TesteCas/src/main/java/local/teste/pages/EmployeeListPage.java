@@ -32,6 +32,8 @@ public class EmployeeListPage extends WebPage {
 		  employees = dao.findAll().iterator();
 		  System.out.println("NOT Send to Task Manager");
 		}
+		
+		
 
 		RepeatingView repeating = new RepeatingView("repeating");
 		add(repeating);

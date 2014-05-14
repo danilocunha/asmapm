@@ -62,10 +62,10 @@ public void timerB() {
 
 	@SuppressWarnings("unchecked")
 	public List<Employee> findAll() {
-		
+		timerA();
 		Query query = entityManager.createQuery("FROM "
 				+ Employee.class.getName());
-		query.setMaxResults(100);
+		query.setMaxResults(10);
 		
 		List<Employee> result = query.getResultList();
 		entityManager.close();
