@@ -1,5 +1,7 @@
 package asmapm.model;
 
+import asmapm.ShutdownHook;
+
 public class CallStackTraceBuilder {
 	private static CallStackTraceThreadLocal traceBuilder = new CallStackTraceThreadLocal();
 	
@@ -7,11 +9,17 @@ public class CallStackTraceBuilder {
 		//System.out.println("\t\tCallStackTraceBuilder enter from: " + fullyQualifiedClassname + "." + methodSignature);
 
 		CallStackTrace state = traceBuilder.get();
-		//if (state.isBuildingTrace()) {
-		//	return; //If we are buildning a trace already, do not start a new trace
-		//}
+		if (state.isBuildingTrace()) {
+			//System.out.println("Ja to fazendo trace " + Thread.currentThread().getId());
+			
+		} else {
+			System.out.println("Iniciando o fazendo trace " + Thread.currentThread().getId());
+			ShutdownHook hook = new ShutdownHook(Thread.currentThread());
+			hook.start();
+		}
 		if(state.getCount()==0) {
-		state.setBuildingTrace(true);
+		  state.setBuildingTrace(true);
+		  
 		}
 		state.incCount();
 		//System.out.println("Level: " + state.getLevel());
@@ -69,7 +77,7 @@ public class CallStackTraceBuilder {
 			state.decCount();
 			
 		} else {
-			System.out.println( "Classe:" + cName + " - Metodo:" + mName + " - Count:" + state.getCount() + " - Level: " + state.getLevel());
+			System.out.println( "Classe:" + cName + " - Metodo:" + mName + " - Count:" + state.getCount() + " - Level: " + state.getLevel() + "ThreadID" + Thread.currentThread().getId());
 			/*for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
 			    System.out.println(ste);
 			}*/
@@ -107,12 +115,36 @@ public class CallStackTraceBuilder {
 	public CallStackTraceThreadLocal getCallStackTrace() {
 		return traceBuilder;
 	}
+	public void leave(String cName, String mName, long threshold,long executionTime, String sql) {
+		CallStackTrace state = traceBuilder.get();
+		state.decLevel();
+	    if (!state.isBuildingTrace()) {
+			return; //If we are buildning a trace already, do not start a new trace
+		}
+
+		state.setBuildingTrace(true);
+		if(executionTime<threshold) {
+			
+			state.decCount();
+			
+		} else {
+			System.out.println( "Classe:" + cName + " \n Metodo:" + mName + " \n Count:" + state.getCount() + " \n Level: " + state.getLevel() + "ThreadID" + Thread.currentThread().getId() + "SQL: " + sql);
+			/*for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+			    System.out.println(ste);
+			}*/
+		}
+		
+	}
 }
 
 class CallStackTraceThreadLocal extends ThreadLocal<CallStackTrace> {
 
 	@Override
 	protected CallStackTrace initialValue() {
+		//ShutdownHook hook = new ShutdownHook(Thread.currentThread());
+		//hook.start();
+		//hook.join();
+		//System.out.println("Primeira chamada detectada da thread");
 		return new CallStackTrace();
 	}
 }

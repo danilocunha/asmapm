@@ -13,8 +13,9 @@ public class Agent {
 	public static void premain(String agentArgs, Instrumentation inst) {
 		agent = new Agent();
 		// registers the transformer
+		
 		inst.addTransformer(new MyAsmTransformer());
-		shutdownHook = new ShutdownHook();
+		
 		//shutdownHook.j
 	}
 
@@ -65,7 +66,7 @@ public class Agent {
 	}
 
 	public static void enter() {
-
+		
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().enter("",
 				"", "", "" , "", System.currentTimeMillis());
 
@@ -77,8 +78,34 @@ public class Agent {
 
 			
 
-			//System.out.println(cName + " " + mName + " Tempo:" + time);
+			System.out.println(cName + " " + mName + " Tempo:" + time);
 			CallStackTraceBuilderFactory.getCallStackTraceBuilder().leave(cName,mName,1000,time);
+			/*
+			 * CallStackTrace c = CallStackTraceBuilderFactory
+			 * .getCallStackTraceBuilder().getCallStackTrace().get(); try {
+			 * c.printOnTextFormat(); } catch (Exception e) {
+			 * 
+			 * }
+			 */
+			// Thread.currentThread().getName().startsWith("")
+			/*
+			 * for (StackTraceElement ste :
+			 * Thread.currentThread().getStackTrace()) {
+			 * System.out.println(ste); }
+			 */
+
+		//}
+
+	}
+	
+	public static void leave(String cName, String mName, long time, String sql) {
+		//System.out.println(cName + " " + mName + " Tempo:" + time);
+		//if (time > 100) {
+
+			
+
+			System.out.println(cName + " " + mName + " Tempo:" + time);
+			CallStackTraceBuilderFactory.getCallStackTraceBuilder().leave(cName,mName,1000,time,sql);
 			/*
 			 * CallStackTrace c = CallStackTraceBuilderFactory
 			 * .getCallStackTraceBuilder().getCallStackTrace().get(); try {

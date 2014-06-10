@@ -62,10 +62,11 @@ public void timerB() {
 
 	@SuppressWarnings("unchecked")
 	public List<Employee> findAll() {
-		timerA();
+		//timerA();
+		
 		Query query = entityManager.createQuery("FROM "
 				+ Employee.class.getName());
-		query.setMaxResults(10);
+		query.setMaxResults(300000);
 		
 		List<Employee> result = query.getResultList();
 		entityManager.close();
@@ -76,6 +77,10 @@ public void timerB() {
 		 */
 		
 		return result;
+	}
+	
+	public void testefunc(String s1, String s2) {
+		System.out.println("String 1:  "+ s1 +" String s2:" + s2);
 	}
 
 }

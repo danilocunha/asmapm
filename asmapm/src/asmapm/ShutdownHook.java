@@ -1,13 +1,18 @@
 package asmapm;
 
-import asmapm.model.CallStackTraceBuilderFactory;
-
 public class ShutdownHook extends Thread {
+	private Thread dadThread;
+
+	public ShutdownHook(Thread t) {
+		// this.threadId = threadId;
+		this.dadThread = t;
+	}
 
 	@Override
 	public void run() {
 		super.run();
-		System.out.println("exit");
-		//CallStackTraceBuilderFactory.getCallStackTraceBuilder().print();
+		
+
+		// CallStackTraceBuilderFactory.getCallStackTraceBuilder().print();
 	}
 }
