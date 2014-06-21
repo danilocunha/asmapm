@@ -64,5 +64,10 @@
   		<artifactId>asm-util</artifactId>
   		<version>4.1</version>
   	</dependency>
+  	<dependency>
+  		<groupId>com.rabbitmq</groupId>
+  		<artifactId>amqp-client</artifactId>
+  		<version>3.3.1</version>
+  	</dependency>
   </dependencies>
 </project>

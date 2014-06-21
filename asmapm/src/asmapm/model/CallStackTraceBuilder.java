@@ -12,11 +12,7 @@ public class CallStackTraceBuilder {
 		if (state.isBuildingTrace()) {
 			//System.out.println("Ja to fazendo trace " + Thread.currentThread().getId());
 			
-		} else {
-			System.out.println("Iniciando o fazendo trace " + Thread.currentThread().getId());
-			ShutdownHook hook = new ShutdownHook(Thread.currentThread());
-			hook.start();
-		}
+		} 
 		if(state.getCount()==0) {
 		  state.setBuildingTrace(true);
 		  

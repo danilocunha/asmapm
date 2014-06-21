@@ -106,17 +106,11 @@ public class MyAsmTransformer implements ClassFileTransformer {
 		}
 
 		ClassReader cr = new ClassReader(classfileBuffer);
-		if(isSQLCall(cr)) {
-			//System.out.println("SQLLLLL");
-			return processSqlClass(className, classBeingRedefined, classfileBuffer, cr);
-		} else if(!toIncludeAfterSQLCheck(dotClassName)) {
+		if(!toIncludeAfterSQLCheck(dotClassName)) {
 			return classfileBuffer;
 			
 		}
-		//cr.getClass().getAnnotations().
-		// System.out.println("Class eh " + dotClassName);
-		// System.out.println(this.getClass().getClassLoader().toString());
-		// System.out.println(className);
+		
 		return processClass(className, classBeingRedefined, classfileBuffer, cr);
 
 	}
@@ -172,44 +166,5 @@ public class MyAsmTransformer implements ClassFileTransformer {
 
 	}
 	
-	private byte[] processSqlClass(String className, Class classBeingRedefined,
-			byte[] classFileBuffer, ClassReader cr) {
-		PrintWriter pw = new PrintWriter(System.out);
-
-		// SplunkJavaAgent.classLoaded(className);
-		
-		// ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
-		ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
-		// TraceClassVisitor tcv = new TraceClassVisitor(cw, pw);
-
-		// MyAdaptor cv = new MyAdaptor(cw);
-		// ClassTracerAdaptor ca = new ClassTracerAdaptor(cw);
-		AddTimerAdaptor ca = new AddTimerAdaptor(cw);
-
-		cr.accept(ca, ClassReader.SKIP_FRAMES);
-
-		File outputDir = new File("/tmp/classes/");
-		outputDir.mkdirs();
-		DataOutputStream dout;
-		String[] classNames = className.split("/");
-		String lastOne = classNames[classNames.length - 1];
-		try {
-			dout = new DataOutputStream(new FileOutputStream(new File(
-					outputDir, lastOne + ".class")));
-			dout.write(cw.toByteArray());
-			dout.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		// TraceClassVisitor cv = new TraceClassVisitor(cw, this.pw);
-		return cw.toByteArray();
-		// return classFileBuffer;
-
-	}
-
+	
 }
