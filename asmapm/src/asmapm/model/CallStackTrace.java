@@ -12,6 +12,8 @@ public class CallStackTrace {
 	private String path;
 	private String className;
 	private String methodName;
+	private String firstClassName;
+	private String firstMethodName;
 	
 	public CallStackTrace() {
 		theadId = Thread.currentThread().getId();
@@ -105,6 +107,29 @@ public class CallStackTrace {
 		this.methodName = methodName;
 	}
 	
+	
+	public String getFirstClassName() {
+		if(firstClassName==null) {
+			firstClassName="";
+		}
+		return firstClassName;
+	}
+
+	public void setFirstClassName(String firstClassName) {
+		this.firstClassName = firstClassName;
+	}
+
+	public String getFirstMethodName() {
+		if(firstMethodName==null) {
+			firstMethodName="";
+		}
+		return firstMethodName;
+	}
+
+	public void setFirstMethodName(String firstMethodName) {
+		this.firstMethodName = firstMethodName;
+	}
+
 	public void printOnTextFormat() {
 		System.out.println(this.callStack.getThreadid());
 		for(CallStack c : this.callStack.getMethodCalls()) {

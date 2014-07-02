@@ -29,10 +29,11 @@ public class AddTimerSQLMethodAdapter extends LocalVariablesSorter {
 		time = newLocal(Type.LONG_TYPE);
 
 		mv.visitVarInsn(Opcodes.LSTORE, time);
-		
+		super.visitLdcInsn(this.cName);
+		super.visitLdcInsn(this.mName);
 		super.visitMethodInsn(Opcodes.INVOKESTATIC,
 				 "asmapm/Agent", "enter",
-				 "()V");
+				 "(Ljava/lang/String;Ljava/lang/String;)V");
 		
 		
 		

@@ -128,21 +128,16 @@ public class MyAsmTransformer implements ClassFileTransformer {
 
 	private byte[] processClass(String className, Class classBeingRedefined,
 			byte[] classFileBuffer, ClassReader cr) {
-		PrintWriter pw = new PrintWriter(System.out);
 
-		// SplunkJavaAgent.classLoaded(className);
-		
-		// ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
 		ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
 		// TraceClassVisitor tcv = new TraceClassVisitor(cw, pw);
 
-		// MyAdaptor cv = new MyAdaptor(cw);
 		// ClassTracerAdaptor ca = new ClassTracerAdaptor(cw);
 		AddTimerAdaptor ca = new AddTimerAdaptor(cw);
 
 		cr.accept(ca, ClassReader.SKIP_FRAMES);
 
-		File outputDir = new File("/tmp/classes/");
+		/*File outputDir = new File("/tmp/classes/");
 		outputDir.mkdirs();
 		DataOutputStream dout;
 		String[] classNames = className.split("/");
@@ -158,7 +153,7 @@ public class MyAsmTransformer implements ClassFileTransformer {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 
 		// TraceClassVisitor cv = new TraceClassVisitor(cw, this.pw);
 		return cw.toByteArray();

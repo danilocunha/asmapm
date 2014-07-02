@@ -32,13 +32,17 @@ public class AddTimerAdaptor extends ClassVisitor {
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc,
 			String signature, String[] exceptions) {
+		
 		MethodVisitor mv = cv.visitMethod(access, name, desc, signature,
 				exceptions);
-		if(isJdbc && !isInterface && mv != null && name.equals("executeQuery")) {
+		
+		boolean isConstructor = name.contains("<") || mv == null;
+		
+		if(isJdbc && !isInterface && mv != null && name.equals("executeQuery") && !isConstructor) {
 			mv = new AddTimerSQLMethodAdapter(mv, owner, name, access, desc);
 			return mv;
 		}
-		if (!isInterface && mv != null && !name.equals("<init>")) {
+		if (!isInterface && mv != null && !isConstructor) {
 			mv = new AddTimerMethodAdapter(mv, owner, name, access, desc);
 		}
 		return mv;

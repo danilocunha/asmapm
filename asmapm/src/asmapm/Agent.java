@@ -1,6 +1,7 @@
 package asmapm;
 
 import java.lang.instrument.Instrumentation;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import asmapm.model.CallStackTrace;
 import asmapm.model.CallStackTraceBuilderFactory;
@@ -8,7 +9,7 @@ import asmapm.model.CallStackTraceBuilderFactory;
 public class Agent {
 	private static Agent agent;
 
-	private static Thread shutdownHook;
+	private ArrayBlockingQueue<JavaLogEvent> eventQueue;
 
 	public static void premain(String agentArgs, Instrumentation inst) {
 		agent = new Agent();
@@ -65,10 +66,10 @@ public class Agent {
 
 	}
 
-	public static void enter() {
+	public static void enter(String cName, String mName) {
 
-		CallStackTraceBuilderFactory.getCallStackTraceBuilder().enter("", "",
-				"", "", "", System.currentTimeMillis());
+		CallStackTraceBuilderFactory.getCallStackTraceBuilder().enter(mName, "",
+				"", cName, "", System.currentTimeMillis());
 
 	}
 
@@ -94,25 +95,18 @@ public class Agent {
 		System.out.println("oi euuuuu ");
 	}
 
-	public static void log(String className, String methodName, String desc,
-			long elapsedTime) {
+	public static ArrayBlockingQueue<JavaLogEvent> getEvenQueue() {
+		if(agent.eventQueue == null) {
+			agent.eventQueue = new ArrayBlockingQueue<>(1000);
+		}
+		
+		return agent.eventQueue;
 
-		JavaLogEvent event = new JavaLogEvent("method_exited", "javaagent");
+	}
 
-		event.addPair("className", className);
-		event.addPair("methodName", methodName);
-		event.addPair("methodDesc", desc);
-		event.addPair("elapsedTime", elapsedTime);
-		event.addPair("threadID", Thread.currentThread().getId());
-		event.addPair("threadName", Thread.currentThread().getName());
-		// addUserTags(event);
-		/*
-		 * try { agent.eventQueue.put(event); //
-		 * agent.eventQueue.offer(event,1000,TimeUnit.MILLISECONDS); } catch
-		 * (InterruptedException e) {
-		 * 
-		 * }
-		 */
+	public static void sendToQueue(JavaLogEvent event) {
+
+		
 		System.out.println(event.toString());
 
 	}
