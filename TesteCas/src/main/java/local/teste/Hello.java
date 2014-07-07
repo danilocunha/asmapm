@@ -20,7 +20,13 @@ public class Hello extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        response.setContentType("text/html");
+        try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		response.setContentType("text/html");
         String estourar = request.getParameter("estourar");
         PrintWriter out = response.getWriter();
         out.println("<html><head><title>Success</title></head><body>");

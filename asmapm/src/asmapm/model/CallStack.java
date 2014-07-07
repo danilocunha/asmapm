@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CallStack {
+	private String className;
 	private String methodName;
 	private String methodSignature;
 	private String fullyQualifiedClassname;
@@ -15,12 +16,24 @@ public class CallStack {
 	private Long executionTime;
 	private long threadid;
 	private String threadName;
+	private String sql;
 
 	public CallStack() {
 		methodCalls = new ArrayList<CallStack>();
 		threadid = Thread.currentThread().getId();
 		threadName = Thread.currentThread().getName();
 	}
+
+	
+	public String getClassName() {
+		return className;
+	}
+
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+
 
 	public String getMethodName() {
 		return methodName;
@@ -50,7 +63,7 @@ public class CallStack {
 		this.methodCalls = methodCalls;
 	}
 	public boolean addMethodCall(CallStack callStack) {
-		callStack.setCallingMethod(this);
+		//callStack.setCallingMethod(this);
 		return methodCalls.add(callStack);
 	}
 
@@ -97,6 +110,17 @@ public class CallStack {
 		this.threadName = threadName;
 	}
 
+	
+	public String getSql() {
+		return sql;
+	}
+
+
+	public void setSql(String sql) {
+		this.sql = sql;
+	}
+
+
 	public long getThreadid() {
 		return threadid;
 	}
@@ -106,6 +130,6 @@ public class CallStack {
 	}
 
 	public String toString() {
-		return this.getFullyQualifiedClassname() + " " + this.getMethodName() /*+ this.getMethodSignature()*/ + " " + this.getTimestamp() + " " + this.getExecutionTime() + " " + this.getLevel();
+		return this.getClassName() + "::" + this.getMethodName()  + " Tempo: " + this.getExecutionTime() + " Level: " + this.getLevel();
 	}
 }

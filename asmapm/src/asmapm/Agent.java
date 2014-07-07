@@ -8,6 +8,7 @@ import asmapm.model.CallStackTraceBuilderFactory;
 
 public class Agent {
 	private static Agent agent;
+	private static long lowThreshold = 200;
 
 	private ArrayBlockingQueue<JavaLogEvent> eventQueue;
 
@@ -17,7 +18,6 @@ public class Agent {
 
 		inst.addTransformer(new MyAsmTransformer());
 
-		// shutdownHook.j
 	}
 
 	public static void methodEntered(String className, String methodName,
@@ -66,6 +66,18 @@ public class Agent {
 
 	}
 
+	public static void startprofile(String cName, String mName) {
+
+		CallStackTraceBuilderFactory.getCallStackTraceBuilder().startprofile(mName, cName);
+
+	}
+	
+	public static void endprofile(String cName, String mName, long executionTime, String caller) {
+
+		CallStackTraceBuilderFactory.getCallStackTraceBuilder().endprofile(mName, cName, lowThreshold, executionTime);
+
+	}
+	
 	public static void enter(String cName, String mName) {
 
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().enter(mName, "",
@@ -73,17 +85,19 @@ public class Agent {
 
 	}
 
+	
+	
 	public static void leave(String cName, String mName, long time) {
 		
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().leave(cName,
-				mName, 1000, time);
+				mName, lowThreshold, time);
 
 	}
 
 	public static void leave(String cName, String mName, long time, String sql) {
 
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().leave(cName,
-				mName, 1000, time, sql);
+				mName, lowThreshold, time, sql);
 
 	}
 

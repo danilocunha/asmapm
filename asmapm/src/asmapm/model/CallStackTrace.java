@@ -1,5 +1,7 @@
 package asmapm.model;
 
+import java.util.Iterator;
+
 public class CallStackTrace {
 	private CallStack callStack = null;
 	private boolean buildingTrace = false;
@@ -12,41 +14,50 @@ public class CallStackTrace {
 	private String path;
 	private String className;
 	private String methodName;
-	private String firstClassName;
-	private String firstMethodName;
-	
+
 	public CallStackTrace() {
 		theadId = Thread.currentThread().getId();
 	}
-	
+
 	public CallStack getCallStack() {
+		if (callStack == null) {
+			callStack = new CallStack();
+		}
 		return callStack;
 	}
-	public void setCallStack(CallStack callStack) {
-		this.callStack = callStack;
+
+	public void resetCallStack() {
+		this.callStack = new CallStack();
 	}
+
 	public boolean isBuildingTrace() {
 		return buildingTrace;
 	}
+
 	public void setBuildingTrace(boolean buildingTrace) {
 		this.buildingTrace = buildingTrace;
 	}
+
 	public int getCount() {
 		return count;
 	}
+
 	public void incCount() {
 		count++;
 	}
+
 	public void decCount() {
 		count--;
 	}
-	
+
 	public int getLevel() {
 		return level;
 	}
+
 	public void incLevel() {
 		level++;
 	}
+
 	public void decLevel() {
 		level--;
 	}
@@ -74,69 +85,53 @@ public class CallStackTrace {
 	public void setTheadId(long theadId) {
 		this.theadId = theadId;
 	}
-	
+
 	public String getClassType() {
 		return classType;
 	}
-	
+
 	public void setClassType(String classType) {
 		this.classType = classType;
 	}
-	
+
 	public String getPath() {
 		return path;
 	}
-	
+
 	public void setPath(String path) {
 		this.path = path;
 	}
-	
+
 	public String getClassName() {
 		return className;
 	}
-	
+
 	public void setClassName(String className) {
 		this.className = className;
 	}
-	
+
 	public String getMethodName() {
 		return methodName;
 	}
-	
+
 	public void setMethodName(String methodName) {
 		this.methodName = methodName;
 	}
-	
-	
-	public String getFirstClassName() {
-		if(firstClassName==null) {
-			firstClassName="";
-		}
-		return firstClassName;
-	}
-
-	public void setFirstClassName(String firstClassName) {
-		this.firstClassName = firstClassName;
-	}
-
-	public String getFirstMethodName() {
-		if(firstMethodName==null) {
-			firstMethodName="";
-		}
-		return firstMethodName;
-	}
-
-	public void setFirstMethodName(String firstMethodName) {
-		this.firstMethodName = firstMethodName;
-	}
 
 	public void printOnTextFormat() {
-		System.out.println(this.callStack.getThreadid());
-		for(CallStack c : this.callStack.getMethodCalls()) {
-			for(int i =0;i<c.getLevel();i++) {
-				System.out.print("");
+		// System.out.println(this.callStack.getThreadid());
+		/*
+		 * for(CallStack c : this.callStack.getMethodCalls()) { for(int i
+		 * =0;i<c.getLevel();i++) { System.out.print(""); }
+		 * System.out.println(c.getMethodName()); }
+		 */
+		Iterator<CallStack> ite = this.callStack.getMethodCalls().iterator();
+		CallStack c;
+		while (ite.hasNext()) {
+			c = ite.next();
+			if ((c.getExecutionTime() > 10) ||(c.getSql()!=null)) {
+				System.out.println(c.toString());
 			}
-			System.out.println(c.getMethodName());
 		}
 	}
 }

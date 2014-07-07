@@ -66,7 +66,7 @@ public void timerB() {
 		
 		Query query = entityManager.createQuery("FROM "
 				+ Employee.class.getName());
-		query.setMaxResults(300000);
+		query.setMaxResults(10);
 		
 		List<Employee> result = query.getResultList();
 		entityManager.close();

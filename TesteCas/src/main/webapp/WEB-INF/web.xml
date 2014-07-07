@@ -65,28 +65,37 @@
 	<listener>
 		<listener-class>sessionmon.SessionAttributeListener</listener-class>
 	</listener> -->
-	<servlet>
+	<!-- <servlet>
 		<servlet-name>SessionMonServlet</servlet-name>
 		<servlet-class>sessionmon.SessionMonServlet</servlet-class>
 		<init-param>
 			<param-name>enabled</param-name>
 			<param-value>true</param-value>
 		</init-param>
-		<!-- needed only if you're running a clustered environment -->
+		needed only if you're running a clustered environment
 		<init-param>
 			<param-name>server_node_addresses</param-name>
 			<param-value>http://localhost:8080,http://localhost:8081</param-value>
 		</init-param>
-		<!-- optional configuration -->
-		<!--init-param> <param-name>override_path</param-name> <param-value>/foo/blah</param-value> 
-			</init-param -->
+		optional configuration
+		init-param> <param-name>override_path</param-name> <param-value>/foo/blah</param-value> 
+			</init-param
 	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>SessionMonServlet</servlet-name>
 		<url-pattern>/sessionmon/*</url-pattern>
-	</servlet-mapping>
+	</servlet-mapping> -->
 
+	<servlet>
+		<servlet-name>Hello</servlet-name>
+		<servlet-class>local.teste.Hello</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>Hello</servlet-name>
+		<url-pattern>/Hello</url-pattern>
+	</servlet-mapping>
 
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>

@@ -27,10 +27,10 @@ public class EmployeeListPage extends WebPage {
 		StringValue sendtotaskmanager = parameters.get("sendtotaskmanager");
 		if(sendtotaskmanager.toString().equals("1")) {
 		  employees = dao.listaTeste().iterator();
-		  System.out.println("Send to Task Manager");
+		  //System.out.println("Send to Task Manager");
 		} else {
 		  employees = dao.findAll().iterator();
-		  System.out.println("NOT Send to Task Manager");
+		  //System.out.println("NOT Send to Task Manager");
 		}
 		
 		

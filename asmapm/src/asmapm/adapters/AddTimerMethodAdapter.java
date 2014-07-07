@@ -1,4 +1,4 @@
-package asmapm;
+package asmapm.adapters;
 
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -7,14 +7,12 @@ import org.objectweb.asm.commons.LocalVariablesSorter;
 
 
 
-public class AddTimerSQLMethodAdapter extends LocalVariablesSorter {
+public class AddTimerMethodAdapter extends LocalVariablesSorter {
 	private int time;
-	
 	private String cName;
 	private String mName;
-	
 
-	public AddTimerSQLMethodAdapter(MethodVisitor mv, String cName, String mName, int access, String desc) {
+	public AddTimerMethodAdapter(MethodVisitor mv, String cName, String mName, int access, String desc) {
 		super(Opcodes.ASM4, access, desc, mv);
 		this.cName = cName;
 		this.mName = mName;
@@ -27,17 +25,15 @@ public class AddTimerSQLMethodAdapter extends LocalVariablesSorter {
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
 				"currentTimeMillis", "()J");
 		time = newLocal(Type.LONG_TYPE);
-
 		mv.visitVarInsn(Opcodes.LSTORE, time);
+		//super.visitLdcInsn(this.cName);
+		//super.visitLdcInsn(this.mName);
 		super.visitLdcInsn(this.cName);
 		super.visitLdcInsn(this.mName);
 		super.visitMethodInsn(Opcodes.INVOKESTATIC,
 				 "asmapm/Agent", "enter",
 				 "(Ljava/lang/String;Ljava/lang/String;)V");
-		
-		
-		
-		
+		//System.out.println(cName + " " + mName);
 	}
 
 	@Override
@@ -51,11 +47,12 @@ public class AddTimerSQLMethodAdapter extends LocalVariablesSorter {
 			mv.visitVarInsn(Opcodes.LLOAD, time);
 			mv.visitInsn(Opcodes.LSUB);
 			
-			super.visitVarInsn(Opcodes.ALOAD, 0);
-			super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, cName, "toString", "()Ljava/lang/String;");
+			
+			
+			
 			super.visitMethodInsn(Opcodes.INVOKESTATIC,
 					 "asmapm/Agent", "leave",
-					 "(Ljava/lang/String;Ljava/lang/String;JLjava/lang/String;)V");
+					 "(Ljava/lang/String;Ljava/lang/String;J)V");
 		}
 		super.visitInsn(opcode);
 	}
