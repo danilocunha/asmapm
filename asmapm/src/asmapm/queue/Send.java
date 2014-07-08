@@ -7,11 +7,21 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
 public class Send {
+	
 	private final static String QUEUE_NAME = "hello";
 	
 	public Send()  {
+		
+		
+		
+	   
+	}
+	
+	public static void testSend() {
 		ConnectionFactory factory = new ConnectionFactory();
 		factory.setHost("centos1");
+		factory.setUsername("admin");
+		factory.setPassword("123456");
 	    Connection connection;
 		try {
 			connection = factory.newConnection();
@@ -26,8 +36,5 @@ public class Send {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-	   
 	}
 }

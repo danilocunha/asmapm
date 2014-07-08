@@ -127,10 +127,25 @@ public class CallStackTrace {
 		 */
 		Iterator<CallStack> ite = this.callStack.getMethodCalls().iterator();
 		CallStack c;
+		boolean showAll=false;
+		int lastLevel = 0;
 		while (ite.hasNext()) {
 			c = ite.next();
-			if ((c.getExecutionTime() > 10) ||(c.getSql()!=null)) {
+			if ((c.getExecutionTime() > 1000)) {				
 				System.out.println(c.toString());
+				lastLevel = c.getLevel();
+			} else {
+				if(showAll && (c.getExecutionTime()>0)) {
+					System.out.println(c.toString());
+					if(lastLevel==c.getLevel()) {
+					  showAll=false;	
+					}
+				} else {
+					if(c.getSql()!=null) {
+						System.out.println(c.toString() + c.getSql());
+						showAll = true;
+					}
+				}
 			}
 		}
 	}

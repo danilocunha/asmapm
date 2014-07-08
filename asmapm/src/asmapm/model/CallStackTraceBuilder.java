@@ -1,5 +1,7 @@
 package asmapm.model;
 
+import asmapm.queue.Send;
+
 public class CallStackTraceBuilder {
 	private static CallStackTraceThreadLocal traceBuilder = new CallStackTraceThreadLocal();
 
@@ -30,7 +32,7 @@ public class CallStackTraceBuilder {
 		stack.setLevel(state.getLevel());
 		state.getCallStack().addMethodCall(stack);
 		state.printOnTextFormat();
-		
+		Send.testSend();
 		//System.out.println("=========TERMINOU O PROFILE===========");
 		
 	}
