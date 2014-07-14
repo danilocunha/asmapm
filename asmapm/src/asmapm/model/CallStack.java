@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CallStack implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private String className;
 	private String methodName;
 	private String methodSignature;
