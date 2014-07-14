@@ -1,8 +1,12 @@
 package asmapm.model;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
-public class CallStackTrace {
+public class CallStackTrace implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
 	private CallStack callStack = null;
 	private boolean buildingTrace = false;
 	private int count = 0;

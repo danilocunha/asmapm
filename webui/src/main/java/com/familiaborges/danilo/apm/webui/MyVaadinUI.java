@@ -1,29 +1,49 @@
 package com.familiaborges.danilo.apm.webui;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 
 import javax.servlet.annotation.WebServlet;
 
+import com.familiaborges.danilo.apm.collector.RabbitMQCollector;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.event.Transferable;
+import com.vaadin.event.dd.DragAndDropEvent;
+import com.vaadin.event.dd.DropHandler;
+import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.View;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbstractSelect.AcceptItem;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.DragAndDropWrapper;
+import com.vaadin.ui.DragAndDropWrapper.DragStartMode;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.NativeButton;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-@Theme("mytheme")
+@Theme("dashboard")
 public class MyVaadinUI extends UI {
 
 	private static final long serialVersionUID = 1L;
@@ -31,11 +51,28 @@ public class MyVaadinUI extends UI {
 	CssLayout root = new CssLayout();
 
 	private HelpManager helpManager;
+	
+	private RabbitMQCollector collector = new RabbitMQCollector();
 
 	CssLayout menu = new CssLayout();
 	CssLayout content = new CssLayout();
 	
 	VerticalLayout loginLayout;
+
+	HashMap<String, Class<? extends View>> routes = new HashMap<String, Class<? extends View>>() {
+        {
+            put("/dashboard", DashboardView.class);
+            put("/transactions", TransactionsView.class);
+            /*put("/sales", SalesView.class);
+            
+            put("/reports", ReportsView.class);
+            put("/schedule", ScheduleView.class);*/
+        }
+    };
+    
+    HashMap<String, Button> viewNameToMenuButton = new HashMap<String, Button>();
+
+    private Navigator nav;
 
 	@WebServlet(value = "/*", asyncSupported = true)
 	@VaadinServletConfiguration(productionMode = false, ui = MyVaadinUI.class, widgetset = "com.familiaborges.danilo.apm.webui.AppWidgetSet")
@@ -45,8 +82,9 @@ public class MyVaadinUI extends UI {
 	@Override
 	protected void init(VaadinRequest request) {
 
+		Thread threadCollector = new Thread(collector);
+		threadCollector.start();
 		
-
 		helpManager = new HelpManager(this);
 
 		setLocale(Locale.US);
@@ -60,7 +98,7 @@ public class MyVaadinUI extends UI {
         bg.addStyleName("login-bg");
         root.addComponent(bg);
 
-		
+        buildLoginView(false);
 	}
 	
 	private void buildLoginView(boolean exit) {
@@ -68,13 +106,13 @@ public class MyVaadinUI extends UI {
             root.removeAllComponents();
         }
         helpManager.closeAll();
-        HelpOverlay w = helpManager
+        /*HelpOverlay w = helpManager
                 .addOverlay(
                         "Welcome to the Dashboard Demo Application",
                         "<p>This application is not real, it only demonstrates an application built with the <a href=\"http://vaadin.com\">Vaadin framework</a>.</p><p>No username or password is required, just click the ‘Sign In’ button to continue. You can try out a random username and password, though.</p>",
                         "login");
         w.center();
-        addWindow(w);
+        addWindow(w);*/
 
         addStyleName("login");
 
@@ -98,7 +136,7 @@ public class MyVaadinUI extends UI {
         labels.addComponent(welcome);
         labels.setComponentAlignment(welcome, Alignment.MIDDLE_LEFT);
 
-        Label title = new Label("QuickTickets Dashboard");
+        Label title = new Label("APM Dashboard");
         title.setSizeUndefined();
         title.addStyleName("h2");
         title.addStyleName("light");
@@ -138,7 +176,7 @@ public class MyVaadinUI extends UI {
                         && password.getValue() != null
                         && password.getValue().equals("")) {
                     signin.removeShortcutListener(enter);
-                    //buildMainView();
+                    buildMainView();
                 } else {
                     if (loginPanel.getComponentCount() > 2) {
                         // Remove the previous error message
@@ -166,5 +204,172 @@ public class MyVaadinUI extends UI {
         loginLayout.addComponent(loginPanel);
         loginLayout.setComponentAlignment(loginPanel, Alignment.MIDDLE_CENTER);
     }
+
+	protected void buildMainView() {
+		nav = new Navigator(this, content);
+
+        for (String route : routes.keySet()) {
+            nav.addView(route, routes.get(route));
+        }
+
+        helpManager.closeAll();
+        removeStyleName("login");
+        root.removeComponent(loginLayout);
+
+        root.addComponent(new HorizontalLayout() {
+            {
+                setSizeFull();
+                addStyleName("main-view");
+                addComponent(new VerticalLayout() {
+                    // Sidebar
+                    {
+                        addStyleName("sidebar");
+                        setWidth(null);
+                        setHeight("100%");
+
+                        // Branding element
+                        addComponent(new CssLayout() {
+                            {
+                                addStyleName("branding");
+                                Label logo = new Label(
+                                        "<span>APM</span> Dashboard",
+                                        ContentMode.HTML);
+                                logo.setSizeUndefined();
+                                addComponent(logo);
+                                // addComponent(new Image(null, new
+                                // ThemeResource(
+                                // "img/branding.png")));
+                            }
+                        });
+
+                        // Main menu
+                        addComponent(menu);
+                        setExpandRatio(menu, 1);
+
+                        // User menu
+                        addComponent(new VerticalLayout() {
+                            {
+                                setSizeUndefined();
+                                addStyleName("user");
+                                Image profilePic = new Image(
+                                        null,
+                                        new ThemeResource("img/profile-pic.png"));
+                                profilePic.setWidth("34px");
+                                addComponent(profilePic);
+                                Label userName = new Label("Danilo Cunha");
+                                userName.setSizeUndefined();
+                                addComponent(userName);
+
+                                Command cmd = new Command() {
+                                    @Override
+                                    public void menuSelected(
+                                            MenuItem selectedItem) {
+                                        Notification
+                                                .show("Not implemented in this demo");
+                                    }
+                                };
+                                MenuBar settings = new MenuBar();
+                                MenuItem settingsMenu = settings.addItem("",
+                                        null);
+                                settingsMenu.setStyleName("icon-cog");
+                                settingsMenu.addItem("Settings", cmd);
+                                settingsMenu.addItem("Preferences", cmd);
+                                settingsMenu.addSeparator();
+                                settingsMenu.addItem("My Account", cmd);
+                                addComponent(settings);
+
+                                Button exit = new NativeButton("Exit");
+                                exit.addStyleName("icon-cancel");
+                                exit.setDescription("Sign Out");
+                                addComponent(exit);
+                                exit.addClickListener(new ClickListener() {
+                                    @Override
+                                    public void buttonClick(ClickEvent event) {
+                                        buildLoginView(true);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+                // Content
+                addComponent(content);
+                content.setSizeFull();
+                content.addStyleName("view-content");
+                setExpandRatio(content, 1);
+            }
+
+        });
+
+        menu.removeAllComponents();
+
+        for (final String view : new String[] { "dashboard", "sales",
+                "transactions", "reports", "schedule" }) {
+            Button b = new NativeButton(view.substring(0, 1).toUpperCase()
+                    + view.substring(1).replace('-', ' '));
+            b.addStyleName("icon-" + view);
+            b.addClickListener(new ClickListener() {
+                @Override
+                public void buttonClick(ClickEvent event) {
+                    clearMenuSelection();
+                    event.getButton().addStyleName("selected");
+                    if (!nav.getState().equals("/" + view))
+                        nav.navigateTo("/" + view);
+                }
+            });
+
+            if (view.equals("reports")) {
+                // Add drop target to reports button
+                DragAndDropWrapper reports = new DragAndDropWrapper(b);
+                reports.setDragStartMode(DragStartMode.NONE);
+                reports.setDropHandler(new DropHandler() {
+
+                    @Override
+                    public void drop(DragAndDropEvent event) {
+                        clearMenuSelection();
+                        viewNameToMenuButton.get("/reports").addStyleName(
+                                "selected");
+                        autoCreateReport = true;
+                        items = event.getTransferable();
+                        nav.navigateTo("/reports");
+                    }
+
+                    @Override
+                    public AcceptCriterion getAcceptCriterion() {
+                        return AcceptItem.ALL;
+                    }
+
+                });
+                menu.addComponent(reports);
+                menu.addStyleName("no-vertical-drag-hints");
+                menu.addStyleName("no-horizontal-drag-hints");
+            } else {
+                menu.addComponent(b);
+            }
+
+            viewNameToMenuButton.put("/" + view, b);
+        }
+        menu.addStyleName("menu");
+        menu.setHeight("100%");
+
+		
+	}
+
+	private Transferable items;
+
+    private void clearMenuSelection() {
+        for (Iterator<Component> it = menu.getComponentIterator(); it.hasNext();) {
+            Component next = it.next();
+            if (next instanceof NativeButton) {
+                next.removeStyleName("selected");
+            } else if (next instanceof DragAndDropWrapper) {
+                // Wow, this is ugly (even uglier than the rest of the code)
+                ((DragAndDropWrapper) next).iterator().next()
+                        .removeStyleName("selected");
+            }
+        }
+    }
+    
+    boolean autoCreateReport = false;
 
 }

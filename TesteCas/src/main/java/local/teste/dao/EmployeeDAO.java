@@ -7,40 +7,40 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import org.hibernate.Criteria;
-
 import local.teste.entity.Employee;
 import local.teste.monitor.TaskMonitor;
-import local.teste.util.ObjectSizeFetcher;
+import local.teste.util.PersistenceManager;
 
 public class EmployeeDAO {
-	protected EntityManager entityManager;
+	
+	
+	protected EntityManager em;
 
 	public EmployeeDAO() {
-		entityManager = getEntityManager();
+		/*entityManager = getEntityManager();*/
 	}
 
 	private EntityManager getEntityManager() {
-		EntityManagerFactory factory = Persistence
-				.createEntityManagerFactory("EmployeePU");
+		EntityManagerFactory emf = PersistenceManager.getInstance().getEntityManagerFactory();
 		
-		if (entityManager == null) {
-			entityManager = factory.createEntityManager();
+		if (em == null) {
+			//System.out.println("Criando Entity Manager");
+			em = emf.createEntityManager();
 		}
 
-		return entityManager;
+		return em;
 	}
 
 	public List<Employee> listaTeste() {
-		TaskMonitor.getInstance().addCall(Thread.currentThread().getId(), Thread.currentThread().getStackTrace()[1].getMethodName());
-		//timerA();
-		//timerB();
+		TaskMonitor.getInstance().addCall(Thread.currentThread().getId(),
+				Thread.currentThread().getStackTrace()[1].getMethodName());
+		// timerA();
+		// timerB();
 		List<Employee> result = findAll();
 		TaskMonitor.getInstance().removeCall(Thread.currentThread().getId());
 		return result;
-		
+
 	}
-	
 
 	public void timerA() {
 		try {
@@ -50,37 +50,37 @@ public class EmployeeDAO {
 			e.printStackTrace();
 		}
 	}
-	
-public void timerB() {
-	try {
-		Thread.sleep(500);
-	} catch (InterruptedException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+
+	public void timerB() {
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Employee> findAll() {
-		//timerA();
+		// timerA();
 		
-		Query query = entityManager.createQuery("FROM "
-				+ Employee.class.getName());
+		Query query = getEntityManager().createQuery(
+				"FROM " + Employee.class.getName());
 		query.setMaxResults(10);
-		
+
 		List<Employee> result = query.getResultList();
-		entityManager.close();
+		getEntityManager().close();
 		/*
 		 * try { System.out.println(ObjectSizeFetcher.sizeOf(result)/1024/1024);
 		 * } catch (IllegalAccessException e) { // TODO Auto-generated catch
 		 * block e.printStackTrace(); }
 		 */
-		
+
 		return result;
 	}
-	
+
 	public void testefunc(String s1, String s2) {
-		System.out.println("String 1:  "+ s1 +" String s2:" + s2);
+		System.out.println("String 1:  " + s1 + " String s2:" + s2);
 	}
 
 }

@@ -1,9 +1,10 @@
 package asmapm.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CallStack {
+public class CallStack implements Serializable {
 	private String className;
 	private String methodName;
 	private String methodSignature;

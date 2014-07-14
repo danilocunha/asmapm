@@ -31,8 +31,8 @@ public class CallStackTraceBuilder {
 		stack.setExecutionTime(executionTime);
 		stack.setLevel(state.getLevel());
 		state.getCallStack().addMethodCall(stack);
-		state.printOnTextFormat();
-		Send.testSend();
+		//state.printOnTextFormat();
+		Send.getInstance().testSend(state);
 		//System.out.println("=========TERMINOU O PROFILE===========");
 		
 	}
