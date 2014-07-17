@@ -10,12 +10,14 @@ import org.objectweb.asm.commons.LocalVariablesSorter;
 import asmapm.adapters.AddTimerMethodAdapter;
 import asmapm.adapters.AddTimerSQLMethodAdapter;
 import asmapm.adapters.FilterMethodAdapter;
+import asmapm.adapters.ServletMethodAdapter;
 
 public class AddTimerAdaptor extends ClassVisitor {
 	private String owner;
 	private boolean isInterface;
 	private boolean isJdbc;
 	private boolean isFilter;
+	private boolean isServlet;
 
 	public AddTimerAdaptor(ClassVisitor cv, ApmType apmType) {
 		super(Opcodes.ASM4, cv);
@@ -25,6 +27,9 @@ public class AddTimerAdaptor extends ClassVisitor {
 			case JDBC:
 				//System.out.println("is JDBC");
 				this.isJdbc = true;
+			case SERVLET:
+				//System.out.println("is SERVLET" + owner);
+				this.isServlet = true;
 			break;
 		}
 	}
@@ -61,6 +66,14 @@ public class AddTimerAdaptor extends ClassVisitor {
 				exceptions);
 
 		boolean isConstructor = name.contains("<") || mv == null;
+		if (isServlet && !isInterface && mv != null && name.equals("doGet")
+				&& !isConstructor) {
+			System.out.println("Metodo SERVLET instrumentalizada: "+ owner
+					 +"::"+name);
+			mv = new ServletMethodAdapter(mv, owner, name, access, desc);
+			 
+			return mv;
+		}
 		if (isFilter && !isInterface && mv != null && name.equals("doFilter")
 				&& !isConstructor) {
 
