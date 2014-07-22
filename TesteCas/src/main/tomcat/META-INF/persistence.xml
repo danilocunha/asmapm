@@ -4,13 +4,15 @@
 	version="2.0" xmlns="http://java.sun.com/xml/ns/persistence">
 	<persistence-unit name="EmployeePU" transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+		<jta-data-source>java:jboss/datasources/employees-ds</jta-data-source>
 		<class>local.teste.entity.Employee</class>
 		<properties>
+		
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect" />
-			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+			<!-- <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/employees" />
 			<property name="javax.persistence.jdbc.user" value="root" />
-			<property name="javax.persistence.jdbc.password" value="" />
+			<property name="javax.persistence.jdbc.password" value="" /> -->
 
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="false" />
@@ -20,13 +22,13 @@
 				value="true" />
 			<property name="hibernate.hbm2ddl.auto" value="update" />
 			<!-- configuration pool via c3p0 -->
-			<property name="hibernate.connection.provider_class" value="org.hibernate.connection.C3P0ConnectionProvider" />
+			<!-- <property name="hibernate.connection.provider_class" value="org.hibernate.c3p0.internal.C3P0ConnectionProvider" />
 			<property name="hibernate.c3p0.acquire_increment" value="1" />
-			<property name="hibernate.c3p0.idle_test_period" value="100" /><!-- seconds -->
+			<property name="hibernate.c3p0.idle_test_period" value="100" />seconds
 			<property name="hibernate.c3p0.max_size" value="20" />
 			<property name="hibernate.c3p0.max_statements" value="0" />
 			<property name="hibernate.c3p0.min_size" value="5" />
-			<property name="hibernate.c3p0.timeout" value="100" /><!-- seconds -->
+			<property name="hibernate.c3p0.timeout" value="100" />seconds -->
 		</properties>
 	</persistence-unit>
 </persistence>

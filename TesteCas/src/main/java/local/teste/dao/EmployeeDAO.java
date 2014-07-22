@@ -64,6 +64,9 @@ public class EmployeeDAO {
 	public List<Employee> findAll() {
 		// timerA();
 		
+		//Stored procedure with delay for tests
+		//Query query = getEntityManager().createNativeQuery("call employees.sp_employees()", Employee.class);
+		
 		Query query = getEntityManager().createQuery(
 				"FROM " + Employee.class.getName());
 		query.setMaxResults(10);

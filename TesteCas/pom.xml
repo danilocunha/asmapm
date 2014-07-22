@@ -7,6 +7,17 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>TesteCas Maven Webapp</name>
 	<url>http://maven.apache.org</url>
+	<properties>
+		<environment>tomcat</environment>
+	</properties>
+	<profiles>
+		<profile>
+			<id>jboss</id>
+			<properties>
+				<environment>jboss</environment>
+			</properties>
+		</profile>
+	</profiles>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -28,17 +39,17 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>4.3.4.Final</version>
+			<version>4.3.5.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
-			<version>4.3.4.Final</version>
+			<version>4.3.5.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-c3p0</artifactId>
-			<version>4.3.4.Final</version>
+			<version>4.3.5.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opensaml</groupId>
@@ -120,6 +131,10 @@
 				<excludes>
 					<exclude>**/*.java</exclude>
 				</excludes>
+			</resource>
+			<resource>
+				<directory>${basedir}/src/main/${environment}/resources</directory>
+				<filtering>true</filtering>
 			</resource>
 		</resources>
 	</build>
