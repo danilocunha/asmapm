@@ -49,6 +49,7 @@ public class MyAsmTransformer implements ClassFileTransformer {
 		classesToSkip.add("antlr.");
 		classesToSkip.add("sessionmon.");
 		classesToSkip.add("apple.");
+		classesToSkip.add("com.arjuna");
 		
 	}
 

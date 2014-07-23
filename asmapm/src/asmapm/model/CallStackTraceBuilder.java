@@ -15,7 +15,7 @@ public class CallStackTraceBuilder {
 		CallStackTrace state = traceBuilder.get();
 		state.setBuildingTrace(true);		
 		state.resetCallStack();
-		System.out.println("=========COMECOU O PROFILE===========");
+		//System.out.println("=========COMECOU O PROFILE===========");
 		
 	}
 	
@@ -82,7 +82,7 @@ public class CallStackTraceBuilder {
 			
 		}
 		
-		state.decLevel();
+		
 		
 
 		CallStack stack = new CallStack();
@@ -91,6 +91,7 @@ public class CallStackTraceBuilder {
 		stack.setExecutionTime(executionTime);
 		stack.setLevel(state.getLevel());
 		state.getCallStack().addMethodCall(stack);
+		state.decLevel();
 		
 	}
 	

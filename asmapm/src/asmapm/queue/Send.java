@@ -61,7 +61,7 @@ public class Send {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("Teste de envio");
+		//System.out.println("Teste de envio");
 
 	}
 }
