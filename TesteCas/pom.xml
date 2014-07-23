@@ -17,12 +17,6 @@
 				<appserver>jboss</appserver>
 			</properties>
 		</profile>
-		<profile>
-			<id>tomcat</id>
-			<properties>
-				<appserver>tomcat</appserver>
-			</properties>
-		</profile>
 	</profiles>
 	<dependencies>
 		<dependency>

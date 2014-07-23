@@ -22,13 +22,13 @@
 				value="true" />
 			<property name="hibernate.hbm2ddl.auto" value="update" />
 			<!-- configuration pool via c3p0 -->
-			<!-- <property name="hibernate.connection.provider_class" value="org.hibernate.c3p0.internal.C3P0ConnectionProvider" />
+			<property name="hibernate.connection.provider_class" value="org.hibernate.c3p0.internal.C3P0ConnectionProvider" />
 			<property name="hibernate.c3p0.acquire_increment" value="1" />
-			<property name="hibernate.c3p0.idle_test_period" value="100" />seconds
+			<property name="hibernate.c3p0.idle_test_period" value="100" /><!-- seconds -->
 			<property name="hibernate.c3p0.max_size" value="20" />
 			<property name="hibernate.c3p0.max_statements" value="0" />
 			<property name="hibernate.c3p0.min_size" value="5" />
-			<property name="hibernate.c3p0.timeout" value="100" />seconds -->
+			<property name="hibernate.c3p0.timeout" value="100" /><!-- seconds -->
 		</properties>
 	</persistence-unit>
 </persistence>
