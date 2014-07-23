@@ -8,13 +8,19 @@
 	<name>TesteCas Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 	<properties>
-		<environment>tomcat</environment>
+		<appserver>tomcat</appserver>
 	</properties>
 	<profiles>
 		<profile>
 			<id>jboss</id>
 			<properties>
-				<environment>jboss</environment>
+				<appserver>jboss</appserver>
+			</properties>
+		</profile>
+		<profile>
+			<id>tomcat</id>
+			<properties>
+				<appserver>tomcat</appserver>
 			</properties>
 		</profile>
 	</profiles>
@@ -116,6 +122,13 @@
 				<directory>src/main/resources</directory>
 			</resource>
 			<resource>
+				<directory>src/main/${appserver}/resources</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>**</include>
+				</includes>
+			</resource>
+			<resource>
 				<filtering>false</filtering>
 				<directory>/WebContent</directory>
 				<includes>
@@ -132,10 +145,7 @@
 					<exclude>**/*.java</exclude>
 				</excludes>
 			</resource>
-			<resource>
-				<directory>${basedir}/src/main/${environment}/resources</directory>
-				<filtering>true</filtering>
-			</resource>
+
 		</resources>
 	</build>
 </project>
