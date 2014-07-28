@@ -1,6 +1,12 @@
 package com.familiaborges.danilo.apm.collector;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import asmapm.model.CallStackTrace;
 import asmapm.model.CallStackTraceBuilder;
@@ -34,11 +40,15 @@ public class RabbitMQCollector implements Runnable {
 			consumer = new QueueingConsumer(channel);
 			channel.basicConsume(QUEUE_NAME, true, consumer);
 			System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
+			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			while (true) {
 				
 				QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 				CallStackTrace state  = org.apache.commons.lang3.SerializationUtils.deserialize(delivery.getBody());
-						//new String(delivery.getBody());
+				System.out.println(dateFormat.format(Calendar.getInstance().getTime()));
+				System.out.println(dateFormat.format(new Date(state.getStartTimestamp())));
+				System.out.println(state.getStartTimestamp());
+				System.out.println(sizeof(state) + " Bytes");
 				state.printOnTextFormat();
 			}
 		} catch (Exception e) {
@@ -48,6 +58,18 @@ public class RabbitMQCollector implements Runnable {
 
 		
 
+	}
+	
+	public static int sizeof(Object obj) throws IOException {
+
+	    ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+	    ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteOutputStream);
+
+	    objectOutputStream.writeObject(obj);
+	    objectOutputStream.flush();
+	    objectOutputStream.close();
+
+	    return byteOutputStream.toByteArray().length;
 	}
 
 }

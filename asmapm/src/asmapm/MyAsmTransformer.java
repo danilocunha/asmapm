@@ -20,43 +20,22 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.TraceClassVisitor;
 
+import asmapm.config.ClassesConfig;
+
 public class MyAsmTransformer implements ClassFileTransformer {
 
-	protected Set<String> instrumentedClasses = new HashSet<String>();
-
-	protected List<String> classesToSkip = new ArrayList<String>();
-
-	protected List<String> classesToInclude = new ArrayList<String>();
 
 	public MyAsmTransformer() {
 		super();
 		
-		classesToInclude.add("org.apache.wicket.protocol.http.WicketFilter");
 		
-
-		classesToSkip.add("apm.");
-		classesToSkip.add("asmapm.");
-		classesToSkip.add("javassist.");
-		classesToSkip.add("javax.");
-		classesToSkip.add("java.");
-		classesToSkip.add("sun.");
-		classesToSkip.add("com.sun.");
-		classesToSkip.add("org.");
-		
-		classesToSkip.add("org.xml.");
-		classesToSkip.add("org.w3c.");
-		classesToSkip.add("com.mysql.");
-		classesToSkip.add("antlr.");
-		classesToSkip.add("sessionmon.");
-		classesToSkip.add("apple.");
-		classesToSkip.add("com.arjuna");
 		
 	}
 
 	public boolean toInclude(String dotClassName) {
 		
 
-		for (String classToInclude : classesToInclude) {
+		for (String classToInclude : ClassesConfig.getInstance().getClassesToInclude()) {
 			if (dotClassName.startsWith(classToInclude)) {
 				// System.out.println(dotClassName +
 				// " nao foi instrumentalizada por skip");
@@ -64,7 +43,7 @@ public class MyAsmTransformer implements ClassFileTransformer {
 			}
 		}
 
-		for (String classToSkip : classesToSkip) {
+		for (String classToSkip : ClassesConfig.getInstance().getClassesToSkip()) {
 			if (dotClassName.startsWith(classToSkip)) {
 				// System.out.println(dotClassName +
 				// " nao foi instrumentalizada por skip");
@@ -79,12 +58,23 @@ public class MyAsmTransformer implements ClassFileTransformer {
 	public byte[] transform(ClassLoader loader, String className,
 			Class<?> classBeingRedefined, ProtectionDomain protectionDomain,
 			byte[] classfileBuffer) throws IllegalClassFormatException {
-
+		
 		String dotClassName = className.replace('/', '.');
-
+		
+		if (loader == null) {
+			// Bootstrapclass
+			return classfileBuffer;
+		}
+		
+		if (!toInclude(dotClassName)) {
+//			 System.out.println(dotClassName +
+//			 " nao foi instrumentalizada por skip");
+			return classfileBuffer;
+		}
+		
 		ClassReader cr = new ClassReader(classfileBuffer);
-		if(isPreparedStatement(cr)) {
-			
+		if((isPreparedStatement(cr))) {
+			//return classfileBuffer;
 			return processClass(className, classBeingRedefined, classfileBuffer, cr, ApmType.JDBC);
 			
 		}
@@ -93,29 +83,7 @@ public class MyAsmTransformer implements ClassFileTransformer {
 			return processClass(className, classBeingRedefined, classfileBuffer, cr, ApmType.SERVLET);	
 		}
 		
-		if (loader == null) {
-			// Bootstrapclass
-			return classfileBuffer;
-		}
 		
-		if (!toInclude(dotClassName)) {
-			// System.out.println(dotClassName +
-			// " nao foi instrumentalizada por skip");
-			return classfileBuffer;
-		}
-
-		
-		
-		/*try {
-			if(javax.servlet.http.HttpServlet.class.isAssignableFrom(Class.forName(dotClassName))) {
-				System.out.println("HttpServlet");
-			}
-			return processClass(className, classBeingRedefined, classfileBuffer, cr);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return classfileBuffer;
-		}*/
 		
 		return processClass(className, classBeingRedefined, classfileBuffer, cr, ApmType.COMMOM_CLASS);
 		

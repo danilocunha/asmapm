@@ -34,7 +34,7 @@ public class CallStackTraceBuilder {
 		state.getCallStack().addMethodCall(stack);
 		//state.printOnTextFormat();
 		Send.getInstance().testSend(state);
-		System.out.println("=========TERMINOU O PROFILE===========");
+		//System.out.println("=========TERMINOU O PROFILE===========");
 		
 	}
 	

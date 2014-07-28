@@ -84,8 +84,9 @@ public class AddTimerAdaptor extends ClassVisitor {
 		}
 		//
 		if (isJdbc && !isInterface && mv != null && name.equals("executeQuery")
-				&& !isConstructor) {
-
+				&& !isConstructor && owner.equals("com/mysql/jdbc/PreparedStatement")) {
+			 System.out.println("Metodo JDBC instrumentalizado: "+ owner
+						 +"::"+name);
 			mv = new AddTimerSQLMethodAdapter(mv, owner, name, access, desc);
 			 
 			return mv;

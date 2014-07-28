@@ -31,7 +31,11 @@ public class CallStackTrace implements Serializable {
 	}
 
 	public void resetCallStack() {
+		this.startTimestamp = System.currentTimeMillis();
+		System.out.println(this.startTimestamp);
 		this.callStack = new CallStack();
+		this.level = 0;
+		this.count=0;
 	}
 
 	public boolean isBuildingTrace() {
@@ -139,7 +143,7 @@ public class CallStackTrace implements Serializable {
 				System.out.println(c.toString());
 				lastLevel = c.getLevel();
 			} else {
-				if(showAll && (c.getExecutionTime()>0)) {
+				if(showAll && (c.getExecutionTime()>10)) {
 					System.out.println(c.toString());
 					if(lastLevel==c.getLevel()) {
 					  showAll=false;	
