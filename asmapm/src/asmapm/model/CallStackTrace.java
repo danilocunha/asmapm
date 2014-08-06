@@ -1,13 +1,16 @@
 package asmapm.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class CallStackTrace implements Serializable {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	private CallStack callStack = null;
+	private List<MethodCall> methodCalls = null;
 	private boolean buildingTrace = false;
 	private int count = 0;
 	private int level = 0;
@@ -23,6 +26,7 @@ public class CallStackTrace implements Serializable {
 		theadId = Thread.currentThread().getId();
 	}
 
+	@Deprecated
 	public CallStack getCallStack() {
 		if (callStack == null) {
 			callStack = new CallStack();
@@ -30,12 +34,19 @@ public class CallStackTrace implements Serializable {
 		return callStack;
 	}
 
+	public List<MethodCall> getMethodCalls() {
+		if (methodCalls == null) {
+			methodCalls = new ArrayList<MethodCall>();
+		}
+		return methodCalls;
+	}
+
 	public void resetCallStack() {
-		this.startTimestamp = System.currentTimeMillis();
-		System.out.println(this.startTimestamp);
-		this.callStack = new CallStack();
+		this.startTimestamp = System.currentTimeMillis();		
+		
+		this.methodCalls = new ArrayList<>();
 		this.level = 0;
-		this.count=0;
+		this.count = 0;
 	}
 
 	public boolean isBuildingTrace() {
@@ -126,6 +137,78 @@ public class CallStackTrace implements Serializable {
 		this.methodName = methodName;
 	}
 
+	public String getOnStringFormat() {
+
+		StringBuffer sb = new StringBuffer();
+
+		Iterator<CallStack> ite = this.callStack.getMethodCalls().iterator();
+		CallStack c;
+		boolean showAll = false;
+		int lastLevel = 0;
+		while (ite.hasNext()) {
+			c = ite.next();
+			if ((c.getExecutionTime() > 1000)) {
+				sb.append(c.toString());
+				sb.append("\n");
+				lastLevel = c.getLevel();
+			} else {
+				if (showAll && (c.getExecutionTime() > 10)) {
+					sb.append(c.toString());
+					sb.append("\n");
+					if (lastLevel == c.getLevel()) {
+						showAll = false;
+					}
+				} else {
+					if (c.getSql() != null) {
+						sb.append(c.getSql());
+						sb.append("\n");
+						// System.out.println(c.toString() + c.getSql());
+						showAll = true;
+					}
+				}
+
+			}
+
+		}
+		return sb.toString();
+	}
+
+	public String getOnStringFormatMethod() {
+
+		StringBuffer sb = new StringBuffer();
+
+		Iterator<MethodCall> ite = this.methodCalls.iterator();
+		MethodCall m;
+		boolean showAll = false;
+		int lastLevel = 0;
+		while (ite.hasNext()) {
+			m = ite.next();
+			if ((m.getExecutionTime() > 1000)) {
+				sb.append(m.toString());
+				sb.append("\n");
+				lastLevel = m.getLevel();
+			} else {
+				if (showAll && (m.getExecutionTime() > 10)) {
+					sb.append(m.toString());
+					sb.append("\n");
+					if (lastLevel == m.getLevel()) {
+						showAll = false;
+					}
+				} else {
+					if (m.getSql() != null) {
+						sb.append(m.getSql());
+						sb.append("\n");
+						// System.out.println(c.toString() + c.getSql());
+						showAll = true;
+					}
+				}
+
+			}
+
+		}
+		return sb.toString();
+	}
+
 	public void printOnTextFormat() {
 		// System.out.println(this.callStack.getThreadid());
 		/*
@@ -133,24 +216,24 @@ public class CallStackTrace implements Serializable {
 		 * =0;i<c.getLevel();i++) { System.out.print(""); }
 		 * System.out.println(c.getMethodName()); }
 		 */
-		Iterator<CallStack> ite = this.callStack.getMethodCalls().iterator();
-		CallStack c;
-		boolean showAll=false;
+		Iterator<MethodCall> ite = this.getMethodCalls().iterator();
+		MethodCall m;
+		boolean showAll = false;
 		int lastLevel = 0;
 		while (ite.hasNext()) {
-			c = ite.next();
-			if ((c.getExecutionTime() > 1000)) {				
-				System.out.println(c.toString());
-				lastLevel = c.getLevel();
+			m = ite.next();
+			if ((m.getExecutionTime() > 1000)) {
+				System.out.println(m.toString());
+				lastLevel = m.getLevel();
 			} else {
-				if(showAll && (c.getExecutionTime()>10)) {
-					System.out.println(c.toString());
-					if(lastLevel==c.getLevel()) {
-					  showAll=false;	
+				if (showAll && (m.getExecutionTime() > 10)) {
+					System.out.println(m.toString());
+					if (lastLevel == m.getLevel()) {
+						showAll = false;
 					}
 				} else {
-					if(c.getSql()!=null) {
-						System.out.println(c.toString() + c.getSql());
+					if (m.getSql() != null) {
+						System.out.println(m.toString() + m.getSql());
 						showAll = true;
 					}
 				}

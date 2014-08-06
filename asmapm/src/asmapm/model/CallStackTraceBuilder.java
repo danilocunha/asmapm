@@ -26,12 +26,19 @@ public class CallStackTraceBuilder {
 		if (executionTime > threshold) {
 			//System.out.println("LEVEL: "+ state.getLevel() + " - " + cName+"::"+mName+" Tempo: " + executionTime);	
 		}
-		CallStack stack = new CallStack();
-		stack.setClassName(cName);
-		stack.setMethodName(mName);
-		stack.setExecutionTime(executionTime);
-		stack.setLevel(state.getLevel());
-		state.getCallStack().addMethodCall(stack);
+		
+		MethodCall method = new MethodCall();
+		
+		method.setClassName(cName);
+		method.setMethodName(mName);
+		method.setExecutionTime(executionTime);
+		method.setLevel(state.getLevel());
+		
+		
+		
+		state.getMethodCalls().add(method);
+		
+		state.setStopTimestamp(System.currentTimeMillis());
 		//state.printOnTextFormat();
 		Send.getInstance().testSend(state);
 		//System.out.println("=========TERMINOU O PROFILE===========");
@@ -82,15 +89,16 @@ public class CallStackTraceBuilder {
 			
 		}
 		
+		MethodCall method = new MethodCall();
+		method.setClassName(cName);
+		method.setMethodName(mName);
+		method.setExecutionTime(executionTime);
+		method.setLevel(state.getLevel());
 		
 		
-
-		CallStack stack = new CallStack();
-		stack.setClassName(cName);
-		stack.setMethodName(mName);
-		stack.setExecutionTime(executionTime);
-		stack.setLevel(state.getLevel());
-		state.getCallStack().addMethodCall(stack);
+		state.getMethodCalls().add(method);
+		
+		
 		state.decLevel();
 		
 	}
@@ -116,13 +124,17 @@ public class CallStackTraceBuilder {
 					+ Thread.currentThread().getId() + "SQL: " + sql);*/
 			
 		}
-		CallStack stack = new CallStack();
-		stack.setClassName(cName);
-		stack.setMethodName(mName);
-		stack.setExecutionTime(executionTime);
-		stack.setLevel(state.getLevel());
-		stack.setSql(sql);
-		state.getCallStack().addMethodCall(stack);
+		
+		
+		MethodCall method = new MethodCall();
+		method.setClassName(cName);
+		method.setMethodName(mName);
+		method.setExecutionTime(executionTime);
+		method.setLevel(state.getLevel());
+		method.setSql(sql);
+		
+		state.getMethodCalls().add(method);
+		
 		//System.out.println("LEVEL: "+ state.getLevel() + " - " + cName+"::"+mName+" Tempo: " + executionTime + " SQL: " + sql);
 		state.decLevel();
 

@@ -15,7 +15,7 @@ public class CallStack implements Serializable {
 	private String methodSignature;
 	private String fullyQualifiedClassname;
 	private List<CallStack> methodCalls;
-	private CallStack callingMethod;
+	private CallStack callerMethod;
 	private int callCount;
 	private int level;
 	private Long timestamp;
@@ -73,11 +73,11 @@ public class CallStack implements Serializable {
 		return methodCalls.add(callStack);
 	}
 
-	public CallStack getCallingMethod() {
-		return callingMethod;
+	public CallStack getCallerMethod() {
+		return callerMethod;
 	}
-	public void setCallingMethod(CallStack callingMethod) {
-		this.callingMethod = callingMethod;
+	public void setCallerMethod(CallStack callerMethod) {
+		this.callerMethod = callerMethod;
 	}
 
 	public int getCallCount() {
