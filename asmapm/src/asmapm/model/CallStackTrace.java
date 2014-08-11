@@ -9,7 +9,7 @@ public class CallStackTrace implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private CallStack callStack = null;
+	
 	private List<MethodCall> methodCalls = null;
 	private boolean buildingTrace = false;
 	private int count = 0;
@@ -24,14 +24,6 @@ public class CallStackTrace implements Serializable {
 
 	public CallStackTrace() {
 		theadId = Thread.currentThread().getId();
-	}
-
-	@Deprecated
-	public CallStack getCallStack() {
-		if (callStack == null) {
-			callStack = new CallStack();
-		}
-		return callStack;
 	}
 
 	public List<MethodCall> getMethodCalls() {
@@ -141,26 +133,26 @@ public class CallStackTrace implements Serializable {
 
 		StringBuffer sb = new StringBuffer();
 
-		Iterator<CallStack> ite = this.callStack.getMethodCalls().iterator();
-		CallStack c;
+		Iterator<MethodCall> ite = this.getMethodCalls().iterator();
+		MethodCall m;
 		boolean showAll = false;
 		int lastLevel = 0;
 		while (ite.hasNext()) {
-			c = ite.next();
-			if ((c.getExecutionTime() > 1000)) {
-				sb.append(c.toString());
+			m = ite.next();
+			if ((m.getExecutionTime() > 1000)) {
+				sb.append(m.toString());
 				sb.append("\n");
-				lastLevel = c.getLevel();
+				lastLevel = m.getLevel();
 			} else {
-				if (showAll && (c.getExecutionTime() > 10)) {
-					sb.append(c.toString());
+				if (showAll && (m.getExecutionTime() > 10)) {
+					sb.append(m.toString());
 					sb.append("\n");
-					if (lastLevel == c.getLevel()) {
+					if (lastLevel == m.getLevel()) {
 						showAll = false;
 					}
 				} else {
-					if (c.getSql() != null) {
-						sb.append(c.getSql());
+					if (m.getSql() != null) {
+						sb.append(m.getSql());
 						sb.append("\n");
 						// System.out.println(c.toString() + c.getSql());
 						showAll = true;

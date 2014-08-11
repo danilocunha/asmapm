@@ -10,9 +10,10 @@ private static final long serialVersionUID = 1L;
 	private String methodName;
 	private String methodSignature;
 	private String fullyQualifiedClassname;
-	private CallStack callerMethod;
+	//private CallStack callerMethod;
 	private int callCount;
 	private int level;
+	private int callerMethodIndex;
 	private Long timestamp;
 	private Long executionTime;
 	private long threadid;
@@ -43,12 +44,12 @@ private static final long serialVersionUID = 1L;
 	public void setFullyQualifiedClassname(String fullyQualifiedClassname) {
 		this.fullyQualifiedClassname = fullyQualifiedClassname;
 	}
-	public CallStack getCallerMethod() {
+/*	public CallStack getCallerMethod() {
 		return callerMethod;
 	}
 	public void setCallerMethod(CallStack callerMethod) {
 		this.callerMethod = callerMethod;
-	}
+	}*/
 	public int getCallCount() {
 		return callCount;
 	}
@@ -61,6 +62,16 @@ private static final long serialVersionUID = 1L;
 	public void setLevel(int level) {
 		this.level = level;
 	}
+	
+	
+	public int getCallerMethodIndex() {
+		return callerMethodIndex;
+	}
+	
+	public void setCallerMethodIndex(int callerMethodIndex) {
+		this.callerMethodIndex = callerMethodIndex;
+	}
+	
 	public Long getTimestamp() {
 		return timestamp;
 	}
