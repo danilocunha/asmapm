@@ -48,14 +48,6 @@ public class AddTimerAdaptor extends ClassVisitor {
 			}
 
 		}
-
-		/*
-		 * try {
-		 * if(javax.servlet.http.HttpServlet.class.isAssignableFrom(Class.forName
-		 * (name))) { System.out.println(name); } } catch
-		 * (ClassNotFoundException e) { System.out.println("Nao achou" + name);
-		 * }
-		 */
 	}
 
 	@Override
@@ -66,12 +58,14 @@ public class AddTimerAdaptor extends ClassVisitor {
 				exceptions);
 
 		boolean isConstructor = name.contains("<") || mv == null;
-		if (isServlet && !isInterface && mv != null && name.equals("doGet")
-				&& !isConstructor) {
-			System.out.println("Metodo SERVLET instrumentalizada: "+ owner
-					 +"::"+name);
+		if (isServlet) {
+			
+			if(!isInterface && mv != null && name.equals("doGet")
+					&& !isConstructor) {
+				System.out.println("Metodo SERVLET instrumentalizada: "+ owner
+				 +"::"+name);
 			mv = new ServletMethodAdapter(mv, owner, name, access, desc);
-			 
+			}
 			return mv;
 		}
 		if (isFilter && !isInterface && mv != null && name.equals("doFilter")

@@ -37,8 +37,8 @@ public class ServletMethodAdapter extends LocalVariablesSorter {
 
 	@Override
 	public void visitInsn(int opcode) {
-		if ((opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN)
-				|| opcode == Opcodes.ATHROW) {
+		/*if ((opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN)
+				|| opcode == Opcodes.ATHROW) {*/
 			super.visitLdcInsn(this.cName);
 			super.visitLdcInsn(this.mName);
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
@@ -46,18 +46,15 @@ public class ServletMethodAdapter extends LocalVariablesSorter {
 			mv.visitVarInsn(Opcodes.LLOAD, time);
 			mv.visitInsn(Opcodes.LSUB);
 
-			super.visitVarInsn(Opcodes.ALOAD, 0);
+			/*super.visitVarInsn(Opcodes.ALOAD, 0);
 			super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, cName, "toString",
-					"()Ljava/lang/String;");
+					"()Ljava/lang/String;");*/
+			super.visitLdcInsn(this.mName);
 			super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
 					"endprofile",
 					"(Ljava/lang/String;Ljava/lang/String;JLjava/lang/String;)V");
-		}
+		//}
 		super.visitInsn(opcode);
 	}
 
-	@Override
-	public void visitMaxs(int maxStack, int maxLocals) {
-		super.visitMaxs(maxStack + 4, maxLocals);
-	}
 }

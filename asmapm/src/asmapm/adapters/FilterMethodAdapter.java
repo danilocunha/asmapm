@@ -7,6 +7,7 @@ import org.objectweb.asm.commons.LocalVariablesSorter;
 
 public class FilterMethodAdapter extends LocalVariablesSorter {
 	private int time;
+	private int contextPath;
 
 	private String cName;
 	private String mName;
@@ -25,9 +26,15 @@ public class FilterMethodAdapter extends LocalVariablesSorter {
 
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
 				"currentTimeMillis", "()J");
-		time = newLocal(Type.LONG_TYPE);
-
+		time = newLocal(Type.LONG_TYPE);		
 		mv.visitVarInsn(Opcodes.LSTORE, time);
+		
+		contextPath = newLocal(Type.getType(String.class));
+		mv.visitVarInsn(Opcodes.ALOAD, 1);
+		mv.visitTypeInsn(Opcodes.CHECKCAST, "javax/servlet/http/HttpServletRequest");
+		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "javax/servlet/http/HttpServletRequest", "getContextPath", "()Ljava/lang/String;");
+		mv.visitVarInsn(Opcodes.ASTORE, contextPath);
+		
 		super.visitLdcInsn(this.cName);
 		super.visitLdcInsn(this.mName);
 		super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
@@ -46,9 +53,10 @@ public class FilterMethodAdapter extends LocalVariablesSorter {
 			mv.visitVarInsn(Opcodes.LLOAD, time);
 			mv.visitInsn(Opcodes.LSUB);
 
-			super.visitVarInsn(Opcodes.ALOAD, 0);
-			super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, cName, "toString",
-					"()Ljava/lang/String;");
+			//super.visitVarInsn(Opcodes.ALOAD, 0);
+			/*super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, cName, "toString",
+					"()Ljava/lang/String;");*/
+			mv.visitVarInsn(Opcodes.ALOAD, contextPath);
 			super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
 					"endprofile",
 					"(Ljava/lang/String;Ljava/lang/String;JLjava/lang/String;)V");

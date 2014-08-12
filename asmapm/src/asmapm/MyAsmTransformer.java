@@ -26,10 +26,7 @@ public class MyAsmTransformer implements ClassFileTransformer {
 
 
 	public MyAsmTransformer() {
-		super();
-		
-		
-		
+		super();	
 	}
 
 	public boolean toInclude(String dotClassName) {
