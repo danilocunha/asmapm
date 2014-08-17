@@ -1,10 +1,15 @@
 package asmapm;
 
 import java.lang.instrument.Instrumentation;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import asmapm.model.CallStackTraceBuilderFactory;
 
 public class Agent {
+	
+	//String s = this.getClass().
+	private final static Logger log = Logger.getLogger("Agent");
 	
 	private static long lowThreshold = 200;
 
@@ -14,13 +19,13 @@ public class Agent {
 	}
 
 	public static void startprofile(String cName, String mName) {
-		System.out.println("Startttt");
+		log.log(Level.INFO, "START PROFILE");
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().startprofile(mName, cName);
 
 	}
 	
 	public static void endprofile(String cName, String mName, long executionTime, String caller) {
-		System.out.println("Euuuu");
+		log.log(Level.INFO, "END PROFILE");
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().endprofile(mName, cName, lowThreshold, executionTime);
 
 	}
