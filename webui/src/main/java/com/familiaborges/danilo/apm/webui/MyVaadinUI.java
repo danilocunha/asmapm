@@ -52,7 +52,7 @@ public class MyVaadinUI extends UI {
 
 	private HelpManager helpManager;
 	
-	private RabbitMQCollector collector = new RabbitMQCollector();
+	
 
 	CssLayout menu = new CssLayout();
 	CssLayout content = new CssLayout();
@@ -82,8 +82,7 @@ public class MyVaadinUI extends UI {
 	@Override
 	protected void init(VaadinRequest request) {
 
-		Thread threadCollector = new Thread(collector);
-		threadCollector.start();
+		
 		
 		helpManager = new HelpManager(this);
 
