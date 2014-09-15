@@ -99,10 +99,9 @@
 		border-left-color: transparent;
 	}
 	
-	.v-table-cell-content:first-child .v-table-cell-wrapper {
-		padding-left: 8px;
-		@include box-sizing(border-box);
-	}
+	.v-treetable .v-table-cell-content:first-child .v-table-cell-wrapper {
+        @include box-sizing(content-box);
+    }
 	
 	.v-table-cell-content:last-child .v-table-cell-wrapper {
 		padding-right: 14px;
