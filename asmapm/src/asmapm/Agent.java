@@ -30,6 +30,19 @@ public class Agent {
 
 	}
 	
+	public static void endprofile(String cName, String mName, long executionTime, RuntimeException e) {
+		log.log(Level.INFO, "END PROFILE");
+		e.printStackTrace();
+		CallStackTraceBuilderFactory.getCallStackTraceBuilder().endprofile(mName, cName, lowThreshold, executionTime);
+
+	}
+	
+	/*public static void endprofile(String cName, String mName, long executionTime, RuntimeException e) {
+		log.log(Level.INFO, "END PROFILE");
+		e.printStackTrace();
+		CallStackTraceBuilderFactory.getCallStackTraceBuilder().endprofile(mName, cName, lowThreshold, executionTime);
+
+	}*/
 	
 	public static void enter(String cName, String mName) {
 
