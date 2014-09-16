@@ -10,8 +10,18 @@
 		<servlet-class>testeservlet.HelloServlet</servlet-class>
 	</servlet>
 
+	<servlet>
+		<servlet-name>NullExceptionServlet</servlet-name>
+		<servlet-class>testeservlet.NullExceptionServlet</servlet-class>
+	</servlet>
+	
 	<servlet-mapping>
 		<servlet-name>HelloWorld</servlet-name>
 		<url-pattern>/HelloWorld</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>NullExceptionServlet</servlet-name>
+		<url-pattern>/NullExceptionServlet</url-pattern>
 	</servlet-mapping>
 </web-app>
