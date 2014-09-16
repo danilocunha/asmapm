@@ -4910,11 +4910,10 @@ body .dashboard.v-app .v-app-loading {
 	border-left-color: transparent;
 }
 
-.dashboard .v-table-cell-content:first-child .v-table-cell-wrapper {
-	padding-left: 8px;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
+.dashboard .v-treetable .v-table-cell-content:first-child .v-table-cell-wrapper {
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
 }
 
 .dashboard .v-table-cell-content:last-child .v-table-cell-wrapper {
