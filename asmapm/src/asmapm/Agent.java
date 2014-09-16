@@ -26,12 +26,14 @@ public class Agent {
 	
 	public static void endprofile(String cName, String mName, long executionTime, String caller) {
 		log.log(Level.INFO, "END PROFILE");
+		log.log(Level.INFO, "Context Path: "+ caller);
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().endprofile(mName, cName, lowThreshold, executionTime);
 
 	}
 	
-	public static void endprofile(String cName, String mName, long executionTime, RuntimeException e) {
+	public static void endprofile(String cName, String mName, long executionTime, RuntimeException e, String contextPath) {
 		log.log(Level.INFO, "END PROFILE");
+		log.log(Level.INFO, "Context Path: "+ contextPath);
 		e.printStackTrace();
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().endprofile(mName, cName, lowThreshold, executionTime);
 

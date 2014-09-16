@@ -9,6 +9,7 @@ import org.objectweb.asm.commons.LocalVariablesSorter;
 public class ServletMethodAdapter extends LocalVariablesSorter {
 	private int time;
 	private int exception;
+	private int contextPath;
 
 	private String cName;
 	private String mName;
@@ -35,6 +36,16 @@ public class ServletMethodAdapter extends LocalVariablesSorter {
 		time = newLocal(Type.LONG_TYPE);
 
 		mv.visitVarInsn(Opcodes.LSTORE, time);
+		contextPath = newLocal(Type.getType(String.class));
+		
+		mv.visitVarInsn(Opcodes.ALOAD, 1);
+		mv.visitTypeInsn(Opcodes.CHECKCAST,
+				"javax/servlet/http/HttpServletRequest");
+		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
+				"javax/servlet/http/HttpServletRequest", "getContextPath",
+				"()Ljava/lang/String;");
+		mv.visitVarInsn(Opcodes.ASTORE, contextPath);
+		
 		super.visitLdcInsn(this.cName);
 		super.visitLdcInsn(this.mName);
 		super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
@@ -56,12 +67,8 @@ public class ServletMethodAdapter extends LocalVariablesSorter {
 			mv.visitVarInsn(Opcodes.LLOAD, time);
 			mv.visitInsn(Opcodes.LSUB);
 
-			/*
-			 * super.visitVarInsn(Opcodes.ALOAD, 0);
-			 * super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, cName, "toString",
-			 * "()Ljava/lang/String;");
-			 */
-			super.visitLdcInsn(this.mName);
+			mv.visitVarInsn(Opcodes.ALOAD, contextPath);
+			
 			super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
 					"endprofile",
 					"(Ljava/lang/String;Ljava/lang/String;JLjava/lang/String;)V");
@@ -85,10 +92,10 @@ public class ServletMethodAdapter extends LocalVariablesSorter {
 		mv.visitVarInsn(Opcodes.LLOAD, time);
 		mv.visitInsn(Opcodes.LSUB);
 		mv.visitVarInsn(Opcodes.ALOAD, exception);
-		
+		mv.visitVarInsn(Opcodes.ALOAD, contextPath);
 		super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
 				"endprofile",
-				"(Ljava/lang/String;Ljava/lang/String;JLjava/lang/RuntimeException;)V");
+				"(Ljava/lang/String;Ljava/lang/String;JLjava/lang/RuntimeException;Ljava/lang/String;)V");
 		
 		mv.visitInsn(Opcodes.ATHROW);
 		
