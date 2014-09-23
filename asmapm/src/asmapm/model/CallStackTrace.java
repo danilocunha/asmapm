@@ -2,6 +2,7 @@ package asmapm.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -11,6 +12,7 @@ public class CallStackTrace implements Serializable {
 
 	
 	private List<MethodCall> methodCalls = null;
+	private HashMap<String, Object> extraData;
 	private boolean buildingTrace = false;
 	private int count = 0;
 	private int level = 0;
@@ -24,19 +26,34 @@ public class CallStackTrace implements Serializable {
 
 	public CallStackTrace() {
 		theadId = Thread.currentThread().getId();
+		
+		methodCalls = new ArrayList<MethodCall>();
+		
+		extraData = new HashMap<String, Object>();
+		
 	}
 
 	public List<MethodCall> getMethodCalls() {
 		if (methodCalls == null) {
 			methodCalls = new ArrayList<MethodCall>();
+			System.out.println("Criando lista de metodos extradata");
 		}
 		return methodCalls;
 	}
 
+	public HashMap<String, Object> getExtraData() {
+		if(extraData==null) {
+			extraData = new HashMap<String, Object>();
+			
+		}
+		return extraData;
+	}
+	
 	public void resetCallStack() {
 		this.startTimestamp = System.currentTimeMillis();		
 		
-		this.methodCalls = new ArrayList<>();
+		this.getMethodCalls().clear();
+		this.getExtraData().clear();
 		this.level = 0;
 		this.count = 0;
 	}
@@ -201,6 +218,9 @@ public class CallStackTrace implements Serializable {
 		return sb.toString();
 	}
 
+	
+
+	
 	public void printOnTextFormat() {
 		// System.out.println(this.callStack.getThreadid());
 		/*

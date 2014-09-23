@@ -56,6 +56,13 @@ public class RabbitMQCollector implements Runnable {
 				System.out.println(dateFormat.format(new Date(state.getStartTimestamp())));
 				System.out.println(state.getStartTimestamp());
 				System.out.println(sizeof(state) + " Bytes");
+				
+				System.out.println("contextPath: "+ state.getExtraData().get("contextPath"));
+				System.out.println("serverName: "+ state.getExtraData().get("serverName"));
+				System.out.println("serverPort: "+ state.getExtraData().get("serverPort"));
+				System.out.println("serverInfo: "+ state.getExtraData().get("serverInfo"));
+				System.out.println("size: "+ state.getExtraData().size());
+				
 				state.printOnTextFormat();
 				ExecutionDAO dao = new ExecutionDAO();
 				Execution dto = new Execution();
