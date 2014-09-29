@@ -11,20 +11,23 @@ import javax.servlet.ServletResponse;
 
 public class HelloFilter implements Filter {
 
+	private FilterConfig config;
+	
 	public void destroy() {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void doFilter(ServletRequest arg0, ServletResponse arg1,
+	public void doFilter(ServletRequest req, ServletResponse arg1,
 			FilterChain arg2) throws IOException, ServletException {
-		// TODO Auto-generated method stub
+		
+		System.out.println("ServerInfo: " + config.getServletContext().getServerInfo());
 
 	}
 
-	public void init(FilterConfig arg0) throws ServletException {
-		// TODO Auto-generated method stub
-
+	public void init(FilterConfig config) throws ServletException {
+		
+		this.config = config;
 	}
 
 }

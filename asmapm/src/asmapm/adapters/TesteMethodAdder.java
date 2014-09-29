@@ -6,7 +6,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.LocalVariablesSorter;
 
-public class FilterMethodAdapter extends LocalVariablesSorter {
+public class TesteMethodAdder extends LocalVariablesSorter {
+
 	private int time;
 	private int exception;
 
@@ -15,18 +16,26 @@ public class FilterMethodAdapter extends LocalVariablesSorter {
 	private Label lTryBlockStart = new Label(), lTryBlockEnd = new Label(),
 			lCatchBlockStart = new Label();
 
-	public FilterMethodAdapter(MethodVisitor mv, String cName, String mName,
+	public TesteMethodAdder(MethodVisitor mv, String cName, String mName,
 			int access, String desc) {
 		super(Opcodes.ASM4, access, desc, mv);
+
 		this.cName = cName;
 		this.mName = mName;
 
 	}
-
+	
+	
 	@Override
 	public void visitCode() {
 		super.visitCode();
-
+		/*if(mName.equals("init")) {
+			mv.visitVarInsn(Opcodes.ALOAD, 0);
+			mv.visitVarInsn(Opcodes.ALOAD, 1);
+			//PUTFIELD testeservlet/HelloFilter.config : Ljavax/servlet/FilterConfig;
+			mv.visitMethodInsn(Opcodes.PUTFIELD, cName, "asmapmConfig" ,"Ljavax/servlet/FilterConfig;", false);
+			//mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V");
+		}*/
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
 				"currentTimeMillis", "()J", false);
 		time = newLocal(Type.LONG_TYPE);
@@ -43,6 +52,7 @@ public class FilterMethodAdapter extends LocalVariablesSorter {
 		
 		exception = newLocal(Type.getType(RuntimeException.class));
 		mv.visitLabel(lTryBlockStart);
+		
 
 	}
 	
@@ -93,7 +103,7 @@ public class FilterMethodAdapter extends LocalVariablesSorter {
 		
 		
 	}
-
+	
 	@Override
 	public void visitInsn(int opcode) {
 		if ((opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN)

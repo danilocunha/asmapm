@@ -68,6 +68,15 @@ public class AddTimerAdaptor extends ClassVisitor {
 			}
 			return mv;
 		}
+		
+		if (isFilter) {
+
+			
+			/* System.out.println("Metodo do FILTER: "+ owner
+			 +"::"+name);*/
+			
+		}
+		
 		if (isFilter && !isInterface && mv != null && name.equals("doFilter")
 				&& !isConstructor) {
 

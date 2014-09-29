@@ -17,6 +17,7 @@ import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
+import javax.servlet.Filter;
 import javax.servlet.http.HttpServlet;
 
 import asmapm.model.CallStackTraceBuilderFactory;
@@ -56,6 +57,13 @@ public class Agent {
 
 	}
 
+	public static void startprofile(String cName, String mName, Object object) {
+		log.log(Level.INFO, "START PROFILE");
+		CallStackTraceBuilderFactory.getCallStackTraceBuilder().startprofile(
+				mName, cName);
+
+	}
+	
 	public static void endprofile(String cName, String mName,
 			long executionTime, String caller) {
 		log.log(Level.INFO, "END PROFILE");
@@ -66,9 +74,9 @@ public class Agent {
 	}
 
 	public static void endprofile(String cName, String mName,
-			long executionTime, RuntimeException e, String contextPath) {
+			long executionTime, RuntimeException e) {
 		log.log(Level.INFO, "END PROFILE");
-		log.log(Level.INFO, "Context Path: " + contextPath);
+		//log.log(Level.INFO, "Context Path: " + CallStackTraceBuilderFactory.getCallStackTraceBuilder().g);
 		e.printStackTrace();
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().endprofile(
 				mName, cName, lowThreshold, executionTime);
