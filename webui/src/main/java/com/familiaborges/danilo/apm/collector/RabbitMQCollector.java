@@ -16,6 +16,7 @@ import asmapm.model.CallStackTraceBuilder;
 
 import com.familiaborges.danilo.apm.dao.ExecutionDAO;
 import com.familiaborges.danilo.apm.dto.Execution;
+import com.familiaborges.danilo.apm.util.WebUIConfig;
 import com.google.gwt.user.rebind.rpc.SerializationUtils;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -24,16 +25,19 @@ import com.rabbitmq.client.QueueingConsumer;
 
 public class RabbitMQCollector implements Runnable {
 
-	private final static String QUEUE_NAME = "hello";
+	private final static String QUEUE_NAME = "asmapmEvents";
 	
 	private static final AtomicLong LAST_TIME_MS = new AtomicLong();
 
 	@Override
 	public void run() {
+		WebUIConfig.getInstance().getValue("rabbitmq.host");
+		
 		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost("centos1");
-		factory.setUsername("admin");
-		factory.setPassword("123456");
+		factory.setHost(WebUIConfig.getInstance().getValue("rabbitmq.host"));
+		factory.setUsername(WebUIConfig.getInstance().getValue("rabbitmq.user"));
+		factory.setPassword(WebUIConfig.getInstance().getValue("rabbitmq.password"));
+		factory.setVirtualHost(WebUIConfig.getInstance().getValue("rabbitmq.vhost"));
 		
 		
 		
