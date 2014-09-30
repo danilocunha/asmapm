@@ -20,7 +20,9 @@ public class HelloFilter implements Filter {
 
 	public void doFilter(ServletRequest req, ServletResponse arg1,
 			FilterChain arg2) throws IOException, ServletException {
-		
+		System.out.println("contextPath: " + config.getServletContext().getContextPath());
+		System.out.println("serverName: " + req.getServerName());
+		System.out.println("serverPort: " + req.getServerPort());
 		System.out.println("ServerInfo: " + config.getServletContext().getServerInfo());
 
 	}

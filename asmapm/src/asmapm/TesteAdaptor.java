@@ -7,6 +7,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 import asmapm.ApmType;
+import asmapm.adapters.FilterConfigFieldAdapter;
 import asmapm.adapters.TesteMethodAdder;
 
 public class TesteAdaptor extends ClassVisitor {
@@ -36,15 +37,9 @@ public class TesteAdaptor extends ClassVisitor {
 	public void visit(int version, int access, String name, String signature,
 			String superName, String[] interfaces) {
 
-		System.out
-				.println("###################################################################################################");
-		System.out.println("ENTREI AQUI NA CLASSE: " + name);
-		System.out
-				.println("###################################################################################################");
-
 		cv.visit(version, access, name, signature, superName, interfaces);
-		/*cv.visitField(Opcodes.ACC_PRIVATE, "asmapCconfig",
-				"Ljavax/servlet/FilterConfig;", null, null).visitEnd();*/
+		cv.visitField(Opcodes.ACC_PRIVATE, "asmapmConfig",
+				"Ljavax/servlet/FilterConfig;", null, null).visitEnd();
 
 		owner = name;
 		isInterface = (access & Opcodes.ACC_INTERFACE) != 0;
@@ -64,6 +59,12 @@ public class TesteAdaptor extends ClassVisitor {
 
 		if (name.equals("doFilter")) {
 			mv = new TesteMethodAdder(mv, owner, name, access, desc);
+		}
+		
+		if ((name.equals("init")) && (desc.equals("(Ljavax/servlet/FilterConfig;)V"))) {
+			System.out.println("Metodo FILTER instrumentalizada: "+ owner
+					  +"::"+name+"::"+desc);
+			mv = new FilterConfigFieldAdapter(mv, owner, name, access, desc);
 		}
 		/*
 		 * boolean isConstructor = name.contains("<") || mv == null; if
