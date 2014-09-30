@@ -19,7 +19,7 @@ public class TesteMethodAdder extends LocalVariablesSorter {
 	public TesteMethodAdder(MethodVisitor mv, String cName, String mName,
 			int access, String desc) {
 		super(Opcodes.ASM4, access, desc, mv);
-
+		
 		this.cName = cName;
 		this.mName = mName;
 
@@ -29,19 +29,11 @@ public class TesteMethodAdder extends LocalVariablesSorter {
 	@Override
 	public void visitCode() {
 		super.visitCode();
-		/*if(mName.equals("init")) {
-			mv.visitVarInsn(Opcodes.ALOAD, 0);
-			mv.visitVarInsn(Opcodes.ALOAD, 1);
-			//PUTFIELD testeservlet/HelloFilter.config : Ljavax/servlet/FilterConfig;
-			mv.visitMethodInsn(Opcodes.PUTFIELD, cName, "asmapmConfig" ,"Ljavax/servlet/FilterConfig;", false);
-			//mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V");
-		}*/
+		
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
 				"currentTimeMillis", "()J", false);
 		time = newLocal(Type.LONG_TYPE);
 		mv.visitVarInsn(Opcodes.LSTORE, time);
-
-		
 
 		super.visitLdcInsn(this.cName);
 		super.visitLdcInsn(this.mName);
@@ -57,50 +49,48 @@ public class TesteMethodAdder extends LocalVariablesSorter {
 	}
 	
 	private void getFilterData() {
-		mv.visitLdcInsn("contextPath");
-		mv.visitVarInsn(Opcodes.ALOAD, 1);	
-		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
-				"javax/servlet/http/HttpServletRequest", "getContextPath",
-				"()Ljava/lang/String;", false);
-		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
+		
 		
 		mv.visitLdcInsn("serverName");
 		mv.visitVarInsn(Opcodes.ALOAD, 1);	
 		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
-				"javax/servlet/http/HttpServletRequest", "getServerName",
-				"()Ljava/lang/String;", false);
+				"javax/servlet/ServletRequest", "getServerName",
+				"()Ljava/lang/String;", true);
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
 		
 		mv.visitLdcInsn("serverPort");
 		mv.visitVarInsn(Opcodes.ALOAD, 1);	
 		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
-				"javax/servlet/http/HttpServletRequest", "getServerPort",
-				"()I", false);
+				"javax/servlet/ServletRequest", "getServerPort",
+				"()I", true);
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC,
 				"java/lang/Integer", "toString",
 				"(I)Ljava/lang/String;", false);
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
 		
-		//mv.visitLdcInsn("serverPort");
-		/*mv.visitVarInsn(Opcodes.ALOAD, 0);	
-		mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL,
-				this.cName.replace(".", "/"), "teste",
-				"()V");*/
 		
-		
-		/*mv.visitLdcInsn("serverInfo");
+		mv.visitLdcInsn("contextPath");
 		mv.visitVarInsn(Opcodes.ALOAD, 0);
-		mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL,
-				"javax/servlet/http/HttpServlet", "getServletContext",
-				"()Ljavax/servlet/ServletContext;");
-		mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL,
-				"javax/servlet/http/HttpServlet", "getServletContext",
-				"()Ljavax/servlet/ServletContext;");
+		mv.visitFieldInsn(Opcodes.GETFIELD, cName, "asmapmConfig", "Ljavax/servlet/FilterConfig;");
+		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
+				"javax/servlet/FilterConfig", "getServletContext",
+				"()Ljavax/servlet/ServletContext;", true);
+		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
+				"javax/servlet/ServletContext", "getContextPath",
+				"()Ljava/lang/String;", true);
+		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
+		
+		mv.visitLdcInsn("serverInfo");
+		mv.visitVarInsn(Opcodes.ALOAD, 0);
+		mv.visitFieldInsn(Opcodes.GETFIELD, cName, "asmapmConfig", "Ljavax/servlet/FilterConfig;");
+		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
+				"javax/servlet/FilterConfig", "getServletContext",
+				"()Ljavax/servlet/ServletContext;", true);
 		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
 				"javax/servlet/ServletContext", "getServerInfo",
-				"()Ljava/lang/String;");
-		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V");*/
-		
+				"()Ljava/lang/String;", true);
+		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
+			
 		
 	}
 	
@@ -115,15 +105,9 @@ public class TesteMethodAdder extends LocalVariablesSorter {
 			mv.visitVarInsn(Opcodes.LLOAD, time);
 			mv.visitInsn(Opcodes.LSUB);
 
-			// super.visitVarInsn(Opcodes.ALOAD, 0);
-			/*
-			 * super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, cName, "toString",
-			 * "()Ljava/lang/String;");
-			 */
-			super.visitLdcInsn("testeeee");
 			super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
 					"endprofile",
-					"(Ljava/lang/String;Ljava/lang/String;JLjava/lang/String;)V", false);
+					"(Ljava/lang/String;Ljava/lang/String;J)V", false);
 		}
 		super.visitInsn(opcode);
 	}
