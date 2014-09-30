@@ -65,9 +65,8 @@ public class Agent {
 	}
 	
 	public static void endprofile(String cName, String mName,
-			long executionTime, String caller) {
+			long executionTime) {
 		log.log(Level.INFO, "END PROFILE");
-		log.log(Level.INFO, "Context Path: " + caller);
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().endprofile(
 				mName, cName, lowThreshold, executionTime);
 

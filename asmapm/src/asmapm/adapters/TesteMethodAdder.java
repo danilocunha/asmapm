@@ -105,15 +105,9 @@ public class TesteMethodAdder extends LocalVariablesSorter {
 			mv.visitVarInsn(Opcodes.LLOAD, time);
 			mv.visitInsn(Opcodes.LSUB);
 
-			// super.visitVarInsn(Opcodes.ALOAD, 0);
-			/*
-			 * super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, cName, "toString",
-			 * "()Ljava/lang/String;");
-			 */
-			super.visitLdcInsn("testeeee");
 			super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
 					"endprofile",
-					"(Ljava/lang/String;Ljava/lang/String;JLjava/lang/String;)V", false);
+					"(Ljava/lang/String;Ljava/lang/String;J)V", false);
 		}
 		super.visitInsn(opcode);
 	}
