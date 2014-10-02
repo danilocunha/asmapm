@@ -56,6 +56,7 @@ public class ClassesConfig {
 		classesToSkip.add("apple.");
 		classesToSkip.add("com.arjuna");
 		classesToSkip.add("com.mysql");
+		classesToSkip.add("net.sourceforge.jtds");
 	}
 	
 	public List<String> getClassesToSkip() {

@@ -1,7 +1,5 @@
 package asmapm.adapters;
 
-import java.util.HashMap;
-
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -11,12 +9,12 @@ import org.objectweb.asm.commons.LocalVariablesSorter;
 public class ServletMethodAdapter extends LocalVariablesSorter {
 	private int time;
 	private int exception;
-	private int contextPath;
+	
 
 	private String cName;
 	private String mName;
 	private Label lTryBlockStart = new Label(), lTryBlockEnd = new Label(),
-			lCatchBlockStart = new Label(), lCatchBlockEnd = new Label();
+			lCatchBlockStart = new Label();
 
 	public ServletMethodAdapter(MethodVisitor mv, String cName, String mName,
 			int access, String desc) {
@@ -34,16 +32,15 @@ public class ServletMethodAdapter extends LocalVariablesSorter {
 		
 
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
-				"currentTimeMillis", "()J");
+				"currentTimeMillis", "()J", false);
 		time = newLocal(Type.LONG_TYPE);
 
-		mv.visitVarInsn(Opcodes.LSTORE, time);
-		contextPath = newLocal(Type.getType(String.class));
+		mv.visitVarInsn(Opcodes.LSTORE, time);		
 		
 		super.visitLdcInsn(this.cName);
 		super.visitLdcInsn(this.mName);
 		super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
-				"startprofile", "(Ljava/lang/String;Ljava/lang/String;)V");
+				"startprofile", "(Ljava/lang/String;Ljava/lang/String;)V", false);
 		
 		getServletData();
 
@@ -57,35 +54,35 @@ public class ServletMethodAdapter extends LocalVariablesSorter {
 		mv.visitVarInsn(Opcodes.ALOAD, 1);	
 		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
 				"javax/servlet/http/HttpServletRequest", "getContextPath",
-				"()Ljava/lang/String;");
-		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V");
+				"()Ljava/lang/String;", true);
+		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
 		
 		mv.visitLdcInsn("serverName");
 		mv.visitVarInsn(Opcodes.ALOAD, 1);	
 		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
 				"javax/servlet/http/HttpServletRequest", "getServerName",
-				"()Ljava/lang/String;");
-		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V");
+				"()Ljava/lang/String;", true);
+		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
 		
 		mv.visitLdcInsn("serverPort");
 		mv.visitVarInsn(Opcodes.ALOAD, 1);	
 		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
 				"javax/servlet/http/HttpServletRequest", "getServerPort",
-				"()I");
+				"()I", true);
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC,
 				"java/lang/Integer", "toString",
-				"(I)Ljava/lang/String;");
-		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V");
+				"(I)Ljava/lang/String;", false);
+		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
 		
 		mv.visitLdcInsn("serverInfo");
 		mv.visitVarInsn(Opcodes.ALOAD, 0);
 		mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL,
 				"javax/servlet/http/HttpServlet", "getServletContext",
-				"()Ljavax/servlet/ServletContext;");
+				"()Ljavax/servlet/ServletContext;", false);
 		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
 				"javax/servlet/ServletContext", "getServerInfo",
-				"()Ljava/lang/String;");
-		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V");
+				"()Ljava/lang/String;", true);
+		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
 		
 		
 	}
@@ -97,15 +94,13 @@ public class ServletMethodAdapter extends LocalVariablesSorter {
 			super.visitLdcInsn(this.cName);
 			super.visitLdcInsn(this.mName);
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
-					"currentTimeMillis", "()J");
+					"currentTimeMillis", "()J", false);
 			mv.visitVarInsn(Opcodes.LLOAD, time);
-			mv.visitInsn(Opcodes.LSUB);
-
-			super.visitLdcInsn("testeeee");
+			mv.visitInsn(Opcodes.LSUB);			
 			
 			super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
 					"endprofile",
-					"(Ljava/lang/String;Ljava/lang/String;JLjava/lang/String;)V");
+					"(Ljava/lang/String;Ljava/lang/String;J)V", false);
 		}
 		super.visitInsn(opcode);
 	}
@@ -122,19 +117,16 @@ public class ServletMethodAdapter extends LocalVariablesSorter {
 		super.visitLdcInsn(this.cName);
 		super.visitLdcInsn(this.mName);
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
-				"currentTimeMillis", "()J");
+				"currentTimeMillis", "()J", false);
 		mv.visitVarInsn(Opcodes.LLOAD, time);
 		mv.visitInsn(Opcodes.LSUB);
 		mv.visitVarInsn(Opcodes.ALOAD, exception);
 		//mv.visitVarInsn(Opcodes.ALOAD, 0);
-		super.visitLdcInsn("testeeee");
+		
 		super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
 				"endprofile",
-				"(Ljava/lang/String;Ljava/lang/String;JLjava/lang/RuntimeException;Ljava/lang/String;)V");
+				"(Ljava/lang/String;Ljava/lang/String;JLjava/lang/RuntimeException;)V", false);
 		
-		/*super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
-				"endprofile",
-				"(Ljava/lang/String;Ljava/lang/String;JLjava/lang/RuntimeException;javax/servlet/http/HttpServletRequest;)V");*/
 		
 		mv.visitInsn(Opcodes.ATHROW);
 		

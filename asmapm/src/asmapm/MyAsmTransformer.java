@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -28,6 +29,8 @@ import asmapm.config.ClassesConfig;
 
 public class MyAsmTransformer implements ClassFileTransformer {
 
+	private final static Logger log = Logger.getLogger("Tranformer");
+	
 	public MyAsmTransformer() {
 		super();
 	}
@@ -81,7 +84,7 @@ public class MyAsmTransformer implements ClassFileTransformer {
 		}
 
 		if ((isServletFilter(cr))) {
-			//return classfileBuffer;
+			log.info("Processando como Filter a classe: " + className);
 			 return processClassTeste(className, classBeingRedefined,
 					classfileBuffer, cr, ApmType.FILTER);
 			/*return processClass(className, classBeingRedefined,
@@ -91,6 +94,8 @@ public class MyAsmTransformer implements ClassFileTransformer {
 		}
 
 		if (isHttpServlet(cr)) {
+			log.info("Processando como Servlet a classe: " + className);
+			//return classfileBuffer;
 			return processClass(className, classBeingRedefined,
 					classfileBuffer, cr, ApmType.SERVLET);
 		}

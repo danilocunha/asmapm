@@ -1,8 +1,11 @@
 package asmapm;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.lang.management.ManagementFactory;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,6 +23,7 @@ import javax.management.ObjectName;
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServlet;
 
+import asmapm.config.APMConfig;
 import asmapm.model.CallStackTraceBuilderFactory;
 import asmapm.model.MethodCall;
 
@@ -30,12 +34,15 @@ public class Agent {
 	private static long lowThreshold = 200;
 
 	public static void premain(String agentArgs, Instrumentation inst) {
-		// System.out.println("===== ENV VARIABLES =====");
-		// dumpVars(System.getenv());
-
+		System.out.println("===== TESTEEEEEEE =====");
+		//dumpVars(System.getenv());		
+				
+		
 		inst.addTransformer(new MyAsmTransformer());
 
 	}
+
+	
 
 	private static void dumpVars(Map<String, ?> m) {
 		List<String> keys = new ArrayList<String>(m.keySet());

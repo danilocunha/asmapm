@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.commons.lang3.SerializationUtils;
 
+import asmapm.config.APMConfig;
 import asmapm.model.CallStackTrace;
 
 import com.rabbitmq.client.Channel;
@@ -14,7 +15,7 @@ public class Send {
 
 	private static Send instance = null;
 
-	private final static String QUEUE_NAME = "hello";
+	private final static String QUEUE_NAME = "asmapmEvents";
 	static ConnectionFactory factory;
 	static Connection connection;
 	static Channel channel;
@@ -28,9 +29,10 @@ public class Send {
 			instance = new Send();
 			factory = new ConnectionFactory();
 
-			factory.setHost("centos1");
-			factory.setUsername("admin");
-			factory.setPassword("123456");
+			factory.setHost(APMConfig.getInstance().getValue("rabbitmq.host"));
+			factory.setUsername(APMConfig.getInstance().getValue("rabbitmq.user"));
+			factory.setPassword(APMConfig.getInstance().getValue("rabbitmq.password"));
+			factory.setVirtualHost(APMConfig.getInstance().getValue("rabbitmq.vhost"));
 
 			try {
 				connection = factory.newConnection();

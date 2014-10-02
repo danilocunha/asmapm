@@ -33,7 +33,7 @@
 					<server>TomcatServer</server>
 					<path>/testeservlet</path>
 					<username>tomcat</username>
-					<password>tomcat1234</password>
+					<password>tomcat</password>
 					<update>true</update>
 				</configuration>
 			</plugin>
