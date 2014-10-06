@@ -100,7 +100,9 @@ public class MyAsmTransformer implements ClassFileTransformer {
 					classfileBuffer, cr, ApmType.SERVLET);
 		}
 
-		// loader.getSystemClassLoader().
+		if(!className.startsWith("br/gov/")) {
+		log.info("Processando classe como comum: " + className);
+		}
 		return processClass(className, classBeingRedefined, classfileBuffer,
 				cr, ApmType.COMMOM_CLASS);
 

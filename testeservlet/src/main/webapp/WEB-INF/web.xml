@@ -5,6 +5,26 @@
 <web-app>
 	<display-name>Archetype Created Web Application</display-name>
 
+	<!-- <resource-ref>
+    	<description>DB Connection Default</description>
+    	<res-ref-name>jdbc/SisnewsInternet</res-ref-name>
+    	<res-type>javax.sql.DataSource</res-type>
+    	<res-auth>Container</res-auth>
+    </resource-ref> -->
+  
+   	<resource-ref>    	
+    	<res-ref-name>jdbc/SisnewsInternetDS1</res-ref-name>
+    	<res-type>javax.sql.DataSource</res-type>
+    	<res-auth>Container</res-auth>    	
+    </resource-ref>
+    <!--
+    <resource-ref>
+    	<description>DB Connection 2</description>
+    	<res-ref-name>jdbc/SisnewsInternet2</res-ref-name>
+    	<res-type>javax.sql.DataSource</res-type>
+    	<res-auth>Container</res-auth>
+    </resource-ref> -->
+    
 	<!-- <filter>
 		<filter-name>HelloFilter</filter-name>
 		<filter-class>testeservlet.HelloFilter</filter-class>

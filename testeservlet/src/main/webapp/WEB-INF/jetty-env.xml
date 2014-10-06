@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+    <Set name="contextPath">/testeservlet</Set>
+    
+    <New id="DSAgencia" class="org.eclipse.jetty.plus.jndi.Resource">		
+		<Arg></Arg>
+		<Arg>jdbc/SisnewsInternetDS</Arg>
+		<Arg>
+			<New class="org.apache.commons.dbcp.BasicDataSource">
+				<Set name="driverClassName">net.sourceforge.jtds.jdbc.Driver</Set>
+				<Set name="url">jdbc:jtds:sqlserver://aldebaran.redecamara.camara.gov.br:3206/SqlDesSisNews</Set>
+				<Set name="username">usr_sisnews</Set>
+				<Set name="password">usr_sisnews</Set>
+			</New>
+		</Arg>
+	</New>
+	
+	<New id="DSEnquete" class="org.eclipse.jetty.plus.jndi.Resource">
+		<Arg></Arg>		
+		<Arg>jdbc/SisnewsInternetDS1</Arg>
+		<Arg>
+			<New class="org.apache.commons.dbcp.BasicDataSource">
+				<Set name="driverClassName">net.sourceforge.jtds.jdbc.Driver</Set>
+				<!--
+				<Set name="url">jdbc:jtds:sqlserver://aldebaran.redecamara.camara.gov.br:3206/sqlDesEnquete</Set>
+				 -->
+				 <!-- <Set name="url">jdbc:jtds:sqlserver://aldebaran.redecamara.camara.gov.br:1826/SqlHomEnquete</Set> -->
+				 <Set name="url">jdbc:jtds:sqlserver://localhost:1433/SqlHomEnquete</Set>
+				<Set name="username">usr_sisnews</Set>
+				<Set name="password">123456</Set>
+			</New>
+		</Arg>
+	</New>
+	
+	<New id="DSDeputados" class="org.eclipse.jetty.plus.jndi.Resource">
+		<Arg></Arg>		
+		<Arg>jdbc/SisnewsInternetDS2</Arg>
+		<Arg>
+			<New class="org.apache.commons.dbcp.BasicDataSource">
+				<Set name="driverClassName">net.sourceforge.jtds.jdbc.Driver</Set>
+				<Set name="url">jdbc:jtds:sqlserver://aldebaran.redecamara.camara.gov.br:3206/sqlDesIntranet</Set>
+				<Set name="username">usr_sisnews</Set>
+				<Set name="password">usr_sisnews</Set>
+			</New>
+		</Arg>
+	</New>
+</Configure>

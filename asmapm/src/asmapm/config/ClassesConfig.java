@@ -48,6 +48,7 @@ public class ClassesConfig {
 		classesToSkip.add("io.undertow.");
 		classesToSkip.add("__redirected.");
 		classesToSkip.add("com.rabbitmq.");
+		classesToSkip.add("net.sf.");
 		
 		classesToSkip.add("org.xml.");
 		classesToSkip.add("org.w3c.");

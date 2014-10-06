@@ -18,10 +18,11 @@
     	<groupId>javax.servlet</groupId>
     	<artifactId>servlet-api</artifactId>
     	<version>2.5</version>
+    	<scope>provided</scope>
     </dependency>
   </dependencies>
   <build>
-		<finalName>TesteCas</finalName>
+		<finalName>testeservlet</finalName>
 		<plugins>
 			
 			<plugin>
@@ -35,6 +36,20 @@
 					<username>tomcat</username>
 					<password>tomcat</password>
 					<update>true</update>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>					
+					<webResources>
+						<resource>
+							<!-- this is relative to the pom.xml directory -->
+							<directory>/src/main/webresources</directory>
+						</resource>
+					</webResources>
+					<outputDirectory>C:\programas\jetty9\webapps\</outputDirectory>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -60,6 +75,7 @@
 					<exclude>**/*.java</exclude>
 				</excludes>
 			</resource>
+			
 		</resources>
 	</build>
 </project>

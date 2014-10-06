@@ -40,10 +40,10 @@ public class TesteMethodAdder extends LocalVariablesSorter {
 		super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
 				"startprofile", "(Ljava/lang/String;Ljava/lang/String;)V", false);
 
-		getFilterData();
+		/*getFilterData();
 		
 		exception = newLocal(Type.getType(RuntimeException.class));
-		mv.visitLabel(lTryBlockStart);
+		mv.visitLabel(lTryBlockStart);*/
 		
 
 	}
@@ -96,7 +96,7 @@ public class TesteMethodAdder extends LocalVariablesSorter {
 	
 	@Override
 	public void visitInsn(int opcode) {
-		if ((opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN)
+		/*if ((opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN)
 				|| opcode == Opcodes.ATHROW) {
 			super.visitLdcInsn(this.cName);
 			super.visitLdcInsn(this.mName);
@@ -108,13 +108,13 @@ public class TesteMethodAdder extends LocalVariablesSorter {
 			super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
 					"endprofile",
 					"(Ljava/lang/String;Ljava/lang/String;J)V", false);
-		}
+		}*/
 		super.visitInsn(opcode);
 	}
 
 	@Override
 	public void visitMaxs(int maxStack, int maxLocals) {
-		mv.visitTryCatchBlock(lTryBlockStart, lTryBlockEnd, lCatchBlockStart,
+		/*mv.visitTryCatchBlock(lTryBlockStart, lTryBlockEnd, lCatchBlockStart,
 				"java/lang/RuntimeException");
 		mv.visitLabel(lTryBlockEnd);
 		mv.visitLabel(lCatchBlockStart);
@@ -133,7 +133,7 @@ public class TesteMethodAdder extends LocalVariablesSorter {
 				"endprofile",
 				"(Ljava/lang/String;Ljava/lang/String;JLjava/lang/RuntimeException;)V", false);
 
-		mv.visitInsn(Opcodes.ATHROW);
+		mv.visitInsn(Opcodes.ATHROW);*/
 		super.visitMaxs(maxStack, maxLocals);
 	}
 }

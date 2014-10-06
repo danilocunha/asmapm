@@ -34,7 +34,7 @@ public class Agent {
 	private static long lowThreshold = 200;
 
 	public static void premain(String agentArgs, Instrumentation inst) {
-		System.out.println("===== TESTEEEEEEE =====");
+		//System.out.println("===== TESTEEEEEEE =====");
 		//dumpVars(System.getenv());		
 				
 		
