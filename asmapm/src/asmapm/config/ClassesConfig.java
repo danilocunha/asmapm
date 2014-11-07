@@ -2,8 +2,11 @@ package asmapm.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class ClassesConfig {
+	
+	private Logger log = Logger.getLogger(this.getClass().getName());
 	
 	private static ClassesConfig instance = null;
 	
@@ -12,6 +15,8 @@ public class ClassesConfig {
 	protected List<String> classesToInclude = new ArrayList<String>();
 	
 	protected List<String> jdbcClasses = new ArrayList<String>();
+	
+	protected List<String> filterClasses = new ArrayList<String>();
 
 	public static ClassesConfig getInstance() {
 	      if(instance == null) {
@@ -58,6 +63,7 @@ public class ClassesConfig {
 		classesToSkip.add("com.arjuna");
 		classesToSkip.add("com.mysql");
 		classesToSkip.add("net.sourceforge.jtds");
+		classesToSkip.add("com.fastsearch");
 	}
 	
 	public List<String> getClassesToSkip() {
@@ -72,6 +78,15 @@ public class ClassesConfig {
 	
 	public List<String> getClassesToInclude() {
 		return this.classesToInclude;
+	}
+	
+	public void addFilterClass(String className) {
+		
+		this.filterClasses.add(className);
+	}
+	
+	public boolean isFilterClass(String className) {
+		return this.filterClasses.contains(className);
 	}
 	
 }

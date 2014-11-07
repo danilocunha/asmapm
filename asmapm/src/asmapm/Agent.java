@@ -24,12 +24,13 @@ import javax.servlet.Filter;
 import javax.servlet.http.HttpServlet;
 
 import asmapm.config.APMConfig;
+import asmapm.model.CallStackTrace;
 import asmapm.model.CallStackTraceBuilderFactory;
 import asmapm.model.MethodCall;
 
 public class Agent {
 
-	private final static Logger log = Logger.getLogger("Agent");
+	private static Logger log = Logger.getLogger("asmapm.Agent");
 
 	private static long lowThreshold = 200;
 
@@ -41,8 +42,6 @@ public class Agent {
 		inst.addTransformer(new MyAsmTransformer());
 
 	}
-
-	
 
 	private static void dumpVars(Map<String, ?> m) {
 		List<String> keys = new ArrayList<String>(m.keySet());
@@ -58,14 +57,19 @@ public class Agent {
 	}
 
 	public static void startprofile(String cName, String mName) {
-		log.log(Level.INFO, "START PROFILE");
-		CallStackTraceBuilderFactory.getCallStackTraceBuilder().startprofile(
-				mName, cName);
+		CallStackTrace state = CallStackTraceBuilderFactory.getCallStackTraceBuilder().getState();
+		if(!state.isBuildingTrace()) {
+			log.log(Level.INFO, "START PROFILE" + cName + "::" + mName + " Thread ID" + Thread.currentThread().getId());
+			CallStackTraceBuilderFactory.getCallStackTraceBuilder().startprofile(
+					mName, cName);
+		} else {
+			log.log(Level.INFO, "PROFILE JA EXISTENTE PARA CHAMADA" + cName + "::" + mName);
+		}		
 
 	}
 
 	public static void startprofile(String cName, String mName, Object object) {
-		log.log(Level.INFO, "START PROFILE");
+		log.log(Level.INFO, "START PROFILE " + cName + "::" + mName);
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().startprofile(
 				mName, cName);
 
@@ -73,7 +77,10 @@ public class Agent {
 	
 	public static void endprofile(String cName, String mName,
 			long executionTime) {
-		log.log(Level.INFO, "END PROFILE");
+		log.log(Level.INFO, "END PROFILE " + cName + "::" + mName);
+		System.out.println();
+		System.out.println();
+		System.out.println();
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().endprofile(
 				mName, cName, lowThreshold, executionTime);
 
@@ -81,7 +88,7 @@ public class Agent {
 
 	public static void endprofile(String cName, String mName,
 			long executionTime, RuntimeException e) {
-		log.log(Level.INFO, "END PROFILE");
+		log.log(Level.INFO, "END PROFILE - RUNTIMEEXCEPTION" + cName + "::" + mName);
 		//log.log(Level.INFO, "Context Path: " + CallStackTraceBuilderFactory.getCallStackTraceBuilder().g);
 		e.printStackTrace();
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().endprofile(

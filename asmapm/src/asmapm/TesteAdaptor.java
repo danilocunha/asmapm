@@ -5,6 +5,8 @@ import java.lang.reflect.Field;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.commons.AnalyzerAdapter;
+import org.objectweb.asm.commons.LocalVariablesSorter;
 
 import asmapm.ApmType;
 import asmapm.adapters.FilterConfigFieldAdapter;
@@ -58,12 +60,18 @@ public class TesteAdaptor extends ClassVisitor {
 				exceptions);
 
 		if (name.equals("doFilter")) {
-			mv = new TesteMethodAdder(mv, owner, name, access, desc);
+			/*System.out.println("Metodo FILTER instrumentalizadaaaaaaaaaaaaaaaaaaaa: "+ owner
+			  +"::"+name+"::"+desc);*/
+			TesteMethodAdder tma = new TesteMethodAdder(mv, owner, name, access, desc);
+			tma.aa = new AnalyzerAdapter(owner, access, name, desc, tma);
+			tma.lvs = new LocalVariablesSorter(access, desc, tma.aa);
+			return tma.lvs;
+
 		}
 		
 		if ((name.equals("init")) && (desc.equals("(Ljavax/servlet/FilterConfig;)V"))) {
-			System.out.println("Metodo FILTER instrumentalizada: "+ owner
-					  +"::"+name+"::"+desc);
+			/*System.out.println("Metodo FILTER instrumentalizada: "+ owner
+					  +"::"+name+"::"+desc);*/
 			mv = new FilterConfigFieldAdapter(mv, owner, name, access, desc);
 		}
 		/*

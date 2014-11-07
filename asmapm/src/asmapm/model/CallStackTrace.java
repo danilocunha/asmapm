@@ -23,6 +23,7 @@ public class CallStackTrace implements Serializable {
 	private String path;
 	private String className;
 	private String methodName;
+	private boolean alreadyStarted;
 
 	public CallStackTrace() {
 		theadId = Thread.currentThread().getId();
@@ -51,11 +52,20 @@ public class CallStackTrace implements Serializable {
 	
 	public void resetCallStack() {
 		this.startTimestamp = System.currentTimeMillis();		
-		
+		setAlreadyStarted(true);
 		this.getMethodCalls().clear();
 		this.getExtraData().clear();
 		this.level = 0;
 		this.count = 0;
+	}
+
+	
+	public boolean isAlreadyStarted() {
+		return alreadyStarted;
+	}
+
+	public void setAlreadyStarted(boolean alreadyStarted) {
+		this.alreadyStarted = alreadyStarted;
 	}
 
 	public boolean isBuildingTrace() {

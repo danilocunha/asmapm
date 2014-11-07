@@ -11,10 +11,15 @@ public class CallStackTraceBuilder {
 
 	}
 
-	public void startprofile(String cName, String mName) {
+	public CallStackTrace startprofile(String cName, String mName) {
 		CallStackTrace state = traceBuilder.get();
-		state.setBuildingTrace(true);
-		state.resetCallStack();
+		if(!state.isBuildingTrace()) {
+		  state.setBuildingTrace(true);
+		  state.resetCallStack();
+		  return state;
+		} else {
+			return state;
+		}
 		// System.out.println("=========COMECOU O PROFILE===========");
 
 	}
@@ -147,6 +152,16 @@ public class CallStackTraceBuilder {
 		CallStackTrace state = traceBuilder.get();
 		state.getExtraData().put(key, value);
 		
+	}
+	
+	public boolean isBuildingTrace() {
+		CallStackTrace state = traceBuilder.get();
+		return state.isBuildingTrace();		
+	}
+	
+	public CallStackTrace getState() {
+		CallStackTrace state = traceBuilder.get();
+		return state;		
 	}
 
 }

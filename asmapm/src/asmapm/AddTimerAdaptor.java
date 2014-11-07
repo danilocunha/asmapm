@@ -5,6 +5,7 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.AnalyzerAdapter;
 import org.objectweb.asm.commons.LocalVariablesSorter;
 
 import asmapm.adapters.AddTimerMethodAdapter;
@@ -64,7 +65,12 @@ public class AddTimerAdaptor extends ClassVisitor {
 					&& !isConstructor) {
 				System.out.println("Metodo SERVLET instrumentalizada: "+ owner
 				 +"::"+name);
-			mv = new ServletMethodAdapter(mv, owner, name, access, desc);
+				ServletMethodAdapter sma = new ServletMethodAdapter(mv, owner, name, access, desc);
+				sma.aa = new AnalyzerAdapter(owner, access, name, desc, sma);
+				sma.lvs  = new LocalVariablesSorter(access, desc, sma.aa);
+				
+				return sma.lvs;
+
 			}
 			return mv;
 		}

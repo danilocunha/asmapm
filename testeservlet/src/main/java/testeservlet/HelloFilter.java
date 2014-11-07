@@ -12,7 +12,7 @@ import javax.servlet.ServletResponse;
 public class HelloFilter implements Filter {
 
 	private FilterConfig config;
-	
+
 	public void destroy() {
 		// TODO Auto-generated method stub
 
@@ -20,15 +20,21 @@ public class HelloFilter implements Filter {
 
 	public void doFilter(ServletRequest req, ServletResponse arg1,
 			FilterChain arg2) throws IOException, ServletException {
-		System.out.println("contextPath: " + config.getServletContext().getContextPath());
+
 		System.out.println("serverName: " + req.getServerName());
 		System.out.println("serverPort: " + req.getServerPort());
-		System.out.println("ServerInfo: " + config.getServletContext().getServerInfo());
+
+		if (config != null) {
+			System.out.println("contextPath: "
+					+ config.getServletContext().getContextPath());
+			System.out.println("ServerInfo: "
+					+ config.getServletContext().getServerInfo());
+		}
 
 	}
 
 	public void init(FilterConfig config) throws ServletException {
-		
+
 		this.config = config;
 	}
 

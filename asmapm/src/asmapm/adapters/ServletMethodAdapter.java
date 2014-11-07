@@ -4,9 +4,13 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.AnalyzerAdapter;
 import org.objectweb.asm.commons.LocalVariablesSorter;
 
 public class ServletMethodAdapter extends LocalVariablesSorter {
+	public LocalVariablesSorter lvs;
+	public AnalyzerAdapter aa;
+
 	private int time;
 	private int exception;
 	
@@ -120,8 +124,7 @@ public class ServletMethodAdapter extends LocalVariablesSorter {
 				"currentTimeMillis", "()J", false);
 		mv.visitVarInsn(Opcodes.LLOAD, time);
 		mv.visitInsn(Opcodes.LSUB);
-		mv.visitVarInsn(Opcodes.ALOAD, exception);
-		//mv.visitVarInsn(Opcodes.ALOAD, 0);
+		mv.visitVarInsn(Opcodes.ALOAD, exception);		
 		
 		super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
 				"endprofile",

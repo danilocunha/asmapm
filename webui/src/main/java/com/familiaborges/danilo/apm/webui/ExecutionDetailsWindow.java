@@ -112,7 +112,13 @@ public class ExecutionDetailsWindow extends Window {
 		int index = l.size();
 		int reverseIndex = 0;
 		while (lite.hasPrevious()) {
+			
 			m = lite.previous();
+			//System.out.println(m.toString()+m.getExecutionTime());
+			if(m.getExecutionTime()>10) {
+			
+			//System.out.println(m.toString()+m.getExecutionTime());
+			}
 			reverseIndex = Math.abs(index-l.size());//Get index of last to first
 			if (m.getLevel() == 0) {//Add root node
 				ttable.addItem(
@@ -122,11 +128,12 @@ public class ExecutionDetailsWindow extends Window {
 				
 			}
 			
-			if ((m.getExecutionTime() > 1000) && !callPath.contains(reverseIndex)) {//If above threshold add to Call Tree. Verify if already added
+			if ((m.getExecutionTime() > 10) && !callPath.contains(reverseIndex)) {//If above threshold add to Call Tree. Verify if already added
 				int dad = setCaller(cst, reverseIndex);//Get dad node and add dad nodes if needed
 				ttable.addItem(
 						new Object[] { m.toString(), m.getExecutionTime(),
 								m.getSql() }, reverseIndex);
+				//setCaller(cst, reverseIndex);
 				ttable.setParent(reverseIndex, dad);
 			}
 			
@@ -135,6 +142,7 @@ public class ExecutionDetailsWindow extends Window {
 				ttable.addItem(
 						new Object[] { m.toString(), m.getExecutionTime(),
 								m.getSql() }, reverseIndex);
+				//setCaller(cst, reverseIndex);
 				ttable.setParent(reverseIndex, dad);
 
 			}
@@ -199,7 +207,11 @@ public class ExecutionDetailsWindow extends Window {
 			parentIndex = i;
 		}
 		//The last added node is parent
+		if(localCallPath.size()>0) {
 		return parentIndex;
+		} else {
+			return indexForward;
+		}
 		
 
 	}

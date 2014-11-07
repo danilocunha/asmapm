@@ -4,10 +4,14 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.AnalyzerAdapter;
 import org.objectweb.asm.commons.LocalVariablesSorter;
 
-public class TesteMethodAdder extends LocalVariablesSorter {
+public class TesteMethodAdder extends MethodVisitor {
 
+	public LocalVariablesSorter lvs;
+	public AnalyzerAdapter aa;
+	
 	private int time;
 	private int exception;
 
@@ -18,7 +22,7 @@ public class TesteMethodAdder extends LocalVariablesSorter {
 
 	public TesteMethodAdder(MethodVisitor mv, String cName, String mName,
 			int access, String desc) {
-		super(Opcodes.ASM4, access, desc, mv);
+		super(Opcodes.ASM4, mv);
 		
 		this.cName = cName;
 		this.mName = mName;
@@ -30,9 +34,14 @@ public class TesteMethodAdder extends LocalVariablesSorter {
 	public void visitCode() {
 		super.visitCode();
 		
+		exception = lvs.newLocal(Type.getType(RuntimeException.class));
+		time = lvs.newLocal(Type.LONG_TYPE);
+		
+		
+		
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
 				"currentTimeMillis", "()J", false);
-		time = newLocal(Type.LONG_TYPE);
+		
 		mv.visitVarInsn(Opcodes.LSTORE, time);
 
 		super.visitLdcInsn(this.cName);
@@ -40,10 +49,11 @@ public class TesteMethodAdder extends LocalVariablesSorter {
 		super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
 				"startprofile", "(Ljava/lang/String;Ljava/lang/String;)V", false);
 
-		/*getFilterData();
+		getFilterData();
 		
-		exception = newLocal(Type.getType(RuntimeException.class));
-		mv.visitLabel(lTryBlockStart);*/
+		mv.visitLabel(lTryBlockStart);
+		
+		
 		
 
 	}
@@ -69,6 +79,10 @@ public class TesteMethodAdder extends LocalVariablesSorter {
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
 		
 		
+		mv.visitVarInsn(Opcodes.ALOAD, 0);
+		mv.visitFieldInsn(Opcodes.GETFIELD, cName, "asmapmConfig", "Ljavax/servlet/FilterConfig;");
+		Label pulaNulo = new Label();
+		mv.visitJumpInsn(Opcodes.IFNULL, pulaNulo);
 		mv.visitLdcInsn("contextPath");
 		mv.visitVarInsn(Opcodes.ALOAD, 0);
 		mv.visitFieldInsn(Opcodes.GETFIELD, cName, "asmapmConfig", "Ljavax/servlet/FilterConfig;");
@@ -90,31 +104,33 @@ public class TesteMethodAdder extends LocalVariablesSorter {
 				"javax/servlet/ServletContext", "getServerInfo",
 				"()Ljava/lang/String;", true);
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
-			
+		mv.visitLabel(pulaNulo);	
 		
 	}
 	
 	@Override
 	public void visitInsn(int opcode) {
-		/*if ((opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN)
+		if ((opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN)
 				|| opcode == Opcodes.ATHROW) {
 			super.visitLdcInsn(this.cName);
 			super.visitLdcInsn(this.mName);
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
 					"currentTimeMillis", "()J", false);
 			mv.visitVarInsn(Opcodes.LLOAD, time);
+			//mv.visitInsn(Opcodes.DUP);
+			//mv.visitVarInsn(Opcodes.LSTORE, time);
 			mv.visitInsn(Opcodes.LSUB);
 
 			super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
 					"endprofile",
 					"(Ljava/lang/String;Ljava/lang/String;J)V", false);
-		}*/
+		}
 		super.visitInsn(opcode);
 	}
 
 	@Override
 	public void visitMaxs(int maxStack, int maxLocals) {
-		/*mv.visitTryCatchBlock(lTryBlockStart, lTryBlockEnd, lCatchBlockStart,
+		mv.visitTryCatchBlock(lTryBlockStart, lTryBlockEnd, lCatchBlockStart,
 				"java/lang/RuntimeException");
 		mv.visitLabel(lTryBlockEnd);
 		mv.visitLabel(lCatchBlockStart);
@@ -133,7 +149,7 @@ public class TesteMethodAdder extends LocalVariablesSorter {
 				"endprofile",
 				"(Ljava/lang/String;Ljava/lang/String;JLjava/lang/RuntimeException;)V", false);
 
-		mv.visitInsn(Opcodes.ATHROW);*/
+		mv.visitInsn(Opcodes.ATHROW);
 		super.visitMaxs(maxStack, maxLocals);
 	}
 }

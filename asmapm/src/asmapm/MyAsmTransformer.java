@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
@@ -30,6 +31,8 @@ import asmapm.config.ClassesConfig;
 public class MyAsmTransformer implements ClassFileTransformer {
 
 	private final static Logger log = Logger.getLogger("Tranformer");
+	
+	private ClassLoader classLoader;
 	
 	public MyAsmTransformer() {
 		super();
@@ -62,11 +65,28 @@ public class MyAsmTransformer implements ClassFileTransformer {
 			Class<?> classBeingRedefined, ProtectionDomain protectionDomain,
 			byte[] classfileBuffer) throws IllegalClassFormatException {
 
+		this.classLoader = loader;
+		
 		String dotClassName = className.replace('/', '.');
 
 		if (loader == null) {
 			// Bootstrapclass
 			return classfileBuffer;
+		}
+		ClassReader cr = new ClassReader(classfileBuffer);
+		
+		
+		
+		if ((isServletFilter(cr.getClassName()))) {
+			log.info("##################################################################");
+			log.info("CLASSE PROCESSADA COMO FILTRO: " + cr.getClassName());
+			log.info("##################################################################");
+			 return processClassTeste(className, classBeingRedefined,
+					classfileBuffer, cr, ApmType.FILTER);
+			/*return processClass(className, classBeingRedefined,
+					classfileBuffer, cr, ApmType.SERVLET);*/
+
+
 		}
 
 		if (!toInclude(dotClassName)) {
@@ -75,7 +95,7 @@ public class MyAsmTransformer implements ClassFileTransformer {
 			return classfileBuffer;
 		}
 
-		ClassReader cr = new ClassReader(classfileBuffer);
+		
 		if ((isPreparedStatement(cr))) {
 			// return classfileBuffer;
 			return processClass(className, classBeingRedefined,
@@ -83,15 +103,7 @@ public class MyAsmTransformer implements ClassFileTransformer {
 
 		}
 
-		if ((isServletFilter(cr))) {
-			log.info("Processando como Filter a classe: " + className);
-			 return processClassTeste(className, classBeingRedefined,
-					classfileBuffer, cr, ApmType.FILTER);
-			/*return processClass(className, classBeingRedefined,
-					classfileBuffer, cr, ApmType.SERVLET);*/
-
-
-		}
+		
 
 		if (isHttpServlet(cr)) {
 			log.info("Processando como Servlet a classe: " + className);
@@ -120,12 +132,68 @@ public class MyAsmTransformer implements ClassFileTransformer {
 	}
 
 	private boolean isServletFilter(ClassReader cr) {
+		
 		String[] interfaces = cr.getInterfaces();
-
+		
+		/*log.info("##################################################################");
+		log.info("CLASSE PAI: " + cr.getSuperName());
+		log.info("##################################################################");*/
 		for (String interfaceName : interfaces) {
 			if (interfaceName.equals("javax/servlet/Filter")) {
-				return true;
+				ClassesConfig.getInstance().addFilterClass(cr.getClassName());
+				return true;				
 			}
+		}
+		try {
+			ClassReader crSuper = new ClassReader(cr.getSuperName());
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+		if(ClassesConfig.getInstance().isFilterClass(cr.getSuperName())) {
+			
+			ClassesConfig.getInstance().addFilterClass(cr.getClassName());
+			return true;
+		}
+		return false;
+	}
+
+private boolean isServletFilter(String className) {
+		
+		ClassReader cr = null;
+		String[] interfaces = null;
+		
+		String fileName = className.replace('.', '/') + ".class";
+        InputStream is = null;
+        
+        try {
+          is = (this.classLoader == null) ?
+              ClassLoader.getSystemResourceAsStream(fileName) :
+            	  this.classLoader.getResourceAsStream(fileName);
+          cr = new ClassReader(is);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        } finally {
+          if (is != null) {
+            try {
+              is.close();
+            } catch (Exception e) {
+            }
+          }
+        }
+		
+		
+		interfaces = cr.getInterfaces();
+		for (String interfaceName : interfaces) {
+			if (interfaceName.equals("javax/servlet/Filter")) {				
+				return true;				
+			}
+		}
+		
+		String superName = cr.getSuperName();
+		if(superName!=null && !superName.equals("java/lang/Object")) {
+			return isServletFilter(cr.getSuperName());
 		}
 		return false;
 	}
@@ -148,13 +216,13 @@ public class MyAsmTransformer implements ClassFileTransformer {
 	private byte[] processClass(String className, Class<?> classBeingRedefined,
 			byte[] classFileBuffer, ClassReader cr, ApmType apmType) {
 
-		ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
+		ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);
 		// TraceClassVisitor tcv = new TraceClassVisitor(cw, pw);
 
 		// ClassTracerAdaptor ca = new ClassTracerAdaptor(cw);
 		AddTimerAdaptor ca = new AddTimerAdaptor(cw, apmType);
 
-		cr.accept(ca, ClassReader.SKIP_FRAMES);
+		cr.accept(ca, ClassReader.EXPAND_FRAMES);
 
 		File outputDir = new File("/tmp/classes/");
 		outputDir.mkdirs();
@@ -183,13 +251,13 @@ public class MyAsmTransformer implements ClassFileTransformer {
 	private byte[] processClassTeste(String className, Class<?>classBeingRedefined,
 			byte[] classFileBuffer, ClassReader cr, ApmType apmType) {
 
-		ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
+		ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);
 		// TraceClassVisitor tcv = new TraceClassVisitor(cw, pw);
 
 		// ClassTracerAdaptor ca = new ClassTracerAdaptor(cw);
 		TesteAdaptor ca = new TesteAdaptor(cw, apmType);
 
-		cr.accept(ca, ClassReader.SKIP_FRAMES);
+		cr.accept(ca, ClassReader.EXPAND_FRAMES);
 
 		File outputDir = new File("/tmp/classes/");
 		outputDir.mkdirs();

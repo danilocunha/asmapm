@@ -1,6 +1,7 @@
 package asmapm.queue;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -12,6 +13,8 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
 public class Send {
+
+	private Logger log = Logger.getLogger(getClass().getName());
 
 	private static Send instance = null;
 
@@ -30,9 +33,12 @@ public class Send {
 			factory = new ConnectionFactory();
 
 			factory.setHost(APMConfig.getInstance().getValue("rabbitmq.host"));
-			factory.setUsername(APMConfig.getInstance().getValue("rabbitmq.user"));
-			factory.setPassword(APMConfig.getInstance().getValue("rabbitmq.password"));
-			factory.setVirtualHost(APMConfig.getInstance().getValue("rabbitmq.vhost"));
+			factory.setUsername(APMConfig.getInstance().getValue(
+					"rabbitmq.user"));
+			factory.setPassword(APMConfig.getInstance().getValue(
+					"rabbitmq.password"));
+			factory.setVirtualHost(APMConfig.getInstance().getValue(
+					"rabbitmq.vhost"));
 
 			try {
 				connection = factory.newConnection();
@@ -40,7 +46,7 @@ public class Send {
 				channel.queueDeclare(QUEUE_NAME, false, false, false, null);
 				// String message = "Hello World!";
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 
@@ -50,20 +56,18 @@ public class Send {
 
 	public void testSend(CallStackTrace data) {
 
-		/*
-		 * try { channel.basicPublish("", QUEUE_NAME, null,
-		 * SerializationUtils.serialize(data)); System.out.println("Enviado"); }
-		 * catch (IOException e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); }
-		 */
-		try {
-			channel.basicPublish("", QUEUE_NAME, null,
-					 SerializationUtils.serialize(data));
+			try {
+			if (channel == null) {
+				log.info("channel nulo nao enviado");
+			} else {
+				channel.basicPublish("", QUEUE_NAME, null,
+						SerializationUtils.serialize(data));
+			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
-		//System.out.println("Teste de envio");
+		// System.out.println("Teste de envio");
 
 	}
 }

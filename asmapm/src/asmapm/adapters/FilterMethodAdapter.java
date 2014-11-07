@@ -4,9 +4,12 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.AnalyzerAdapter;
 import org.objectweb.asm.commons.LocalVariablesSorter;
 
 public class FilterMethodAdapter extends LocalVariablesSorter {
+	public LocalVariablesSorter lvs;
+	public AnalyzerAdapter aa;
 	private int time;
 	private int exception;
 
