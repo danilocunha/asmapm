@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,22 +28,57 @@ import asmapm.config.APMConfig;
 import asmapm.model.CallStackTrace;
 import asmapm.model.CallStackTraceBuilderFactory;
 import asmapm.model.MethodCall;
+import asmapm.queue.AssyncRabbitMQSender;
 
 public class Agent {
 
 	private static Logger log = Logger.getLogger("asmapm.Agent");
+	
+	private static Agent agent;
 
 	private static long lowThreshold = 200;
+	
+	private LinkedBlockingQueue<CallStackTrace> queue;
+	
+	private AssyncRabbitMQSender sender;
 
 	public static void premain(String agentArgs, Instrumentation inst) {
 		//System.out.println("===== TESTEEEEEEE =====");
 		//dumpVars(System.getenv());		
 				
 		
+		if (!getInstance().initTransport())
+			return;
+		
 		inst.addTransformer(new MyAsmTransformer());
 
 	}
+	
+	public static Agent getInstance() {
+		if(agent == null) {
+			agent = new Agent();	
+		}
+		return agent;		
+	}
+	
+	public LinkedBlockingQueue<CallStackTrace> getQueue() {		
+		return this.queue;		
+	}
 
+	private boolean initTransport() {
+		try {
+
+			this.queue = new LinkedBlockingQueue<CallStackTrace>(1000);			
+			Thread t = new Thread(new AssyncRabbitMQSender());
+	        t.start();
+
+		} catch (Exception e) {
+
+			return false;
+		}
+		return true;
+	}	
+	
 	private static void dumpVars(Map<String, ?> m) {
 		List<String> keys = new ArrayList<String>(m.keySet());
 		Collections.sort(keys);

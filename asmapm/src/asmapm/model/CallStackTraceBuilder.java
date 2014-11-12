@@ -1,5 +1,7 @@
 package asmapm.model;
 
+import asmapm.Agent;
+import asmapm.queue.AssyncRabbitMQSender;
 import asmapm.queue.Send;
 
 public class CallStackTraceBuilder {
@@ -44,7 +46,8 @@ public class CallStackTraceBuilder {
 
 		state.setStopTimestamp(System.currentTimeMillis());
 
-		Send.getInstance().testSend(state);
+		//Send.getInstance().testSend(state);
+		Agent.getInstance().getQueue().add(state);
 		// System.out.println("=========TERMINOU O PROFILE===========");
 
 	}

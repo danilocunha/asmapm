@@ -100,7 +100,8 @@ public class AddTimerAdaptor extends ClassVisitor {
 			 
 			return mv;
 		}
-		if (!isInterface && mv != null && !isConstructor) {
+		//if (!isInterface && mv != null && !isConstructor) {
+		if (!isInterface && mv != null) {
 			mv = new AddTimerMethodAdapter(mv, owner, name, access, desc);
 			 
 		}

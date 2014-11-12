@@ -162,16 +162,16 @@ public class ExecutionDetailsWindow extends Window {
 		
 		ArrayList<Integer> localCallPath = new ArrayList<Integer>();//local Call Path to be added to Call Path
 		
-		int index = (l.size()-1) - indexForward;
+		int index = (l.size()) - indexForward -1;
 		int nextLevelOfCaller = l.get(index).getLevel() - 1;
 		
 		
-		while (index<l.size()) {
-			m = l.get(index);
+		while (index<(l.size()-1)) {
+			m = l.get(index+1);
 			
 			if (m.getLevel() == nextLevelOfCaller) {
 				
-				indexForward = Math.abs(index-(l.size()-1));//Calcula o indice do filho
+				indexForward = Math.abs(index-(l.size()));//Calcula o indice do filho
 				if((!callPath.contains(indexForward))) {//Se o filho já nao foi adicionado a tabela o faz
 					
 					localCallPath.add(indexForward);//Atualiza que o filho é para ser adicionado na tabela

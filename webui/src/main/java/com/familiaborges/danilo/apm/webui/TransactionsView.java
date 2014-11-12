@@ -49,7 +49,7 @@ public class TransactionsView extends VerticalLayout implements View {
         t.addItemClickListener(new ItemClickListener() {
             @Override
             public void itemClick(ItemClickEvent event) {
-                if (!event.isDoubleClick()) {
+                if (event.isDoubleClick()) {
                 	 showExecutionDetailsWindows(event.getItem());
             }
                 // do something in here
@@ -63,6 +63,8 @@ public class TransactionsView extends VerticalLayout implements View {
             private Action discard = new Action("Discard");
 
             private Action callstack = new Action("Callstack");
+            
+            private Action rawView = new Action("RAW View");
 
             @Override
             public void handleAction(Action action, Object sender, Object target) {
@@ -76,12 +78,18 @@ public class TransactionsView extends VerticalLayout implements View {
                         
                     	showExecutionDetailsWindows(item);
                     }
+                } else if (action == rawView) {
+                    Item item = ((Table) sender).getItem(target);
+                    if (item != null) {
+                        
+                    	showRawDetailsWindows(item);
+                    }
                 }
             }
 
             @Override
             public Action[] getActions(Object target, Object sender) {
-                return new Action[] { callstack, report, discard };
+                return new Action[] { callstack, report, discard, rawView };
             }
         });
         
@@ -115,5 +123,14 @@ public class TransactionsView extends VerticalLayout implements View {
 		// TODO Auto-generated method stub
 
 	}
+	
+	public void showRawDetailsWindows(Item item) {
+		Window w = new RawDetailsWindow(dao
+                .findById(item.getItemProperty("idExecution")
+                        .getValue()));
+        UI.getCurrent().addWindow(w);
+        w.focus();	
+	}
+	
 
 }
