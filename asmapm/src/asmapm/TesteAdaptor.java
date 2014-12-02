@@ -32,24 +32,18 @@ public class TesteAdaptor extends ClassVisitor {
 			// System.out.println("is SERVLET" + owner);
 			this.isServlet = true;
 			break;
+		case FILTER:
+			// System.out.println("is SERVLET" + owner);
+			this.isFilter = true;
+			break;
 		}
 	}
 
 	@Override
 	public void visit(int version, int access, String name, String signature,
 			String superName, String[] interfaces) {
-
+		this.owner = name;
 		cv.visit(version, access, name, signature, superName, interfaces);
-		cv.visitField(Opcodes.ACC_PRIVATE, "asmapmConfig",
-				"Ljavax/servlet/FilterConfig;", null, null).visitEnd();
-
-		owner = name;
-		isInterface = (access & Opcodes.ACC_INTERFACE) != 0;
-		for (final String interfaceName : interfaces) {
-			if (interfaceName.equals("javax/servlet/Filter")) {
-				this.isFilter = true;
-			}
-		}
 	}
 
 	@Override
@@ -57,57 +51,17 @@ public class TesteAdaptor extends ClassVisitor {
 			String signature, String[] exceptions) {
 
 		MethodVisitor mv = cv.visitMethod(access, name, desc, signature,
-				exceptions);
-
+				exceptions);		
 		if (name.equals("doFilter")) {
-			/*System.out.println("Metodo FILTER instrumentalizadaaaaaaaaaaaaaaaaaaaa: "+ owner
-			  +"::"+name+"::"+desc);*/
+			System.out.println("Acheiiiiiii um Metodo FILTER: "+ owner
+			  +"::"+name+"::"+desc);
 			TesteMethodAdder tma = new TesteMethodAdder(mv, owner, name, access, desc);
 			tma.aa = new AnalyzerAdapter(owner, access, name, desc, tma);
 			tma.lvs = new LocalVariablesSorter(access, desc, tma.aa);
 			return tma.lvs;
 
 		}
-		
-		if ((name.equals("init")) && (desc.equals("(Ljavax/servlet/FilterConfig;)V"))) {
-			/*System.out.println("Metodo FILTER instrumentalizada: "+ owner
-					  +"::"+name+"::"+desc);*/
-			mv = new FilterConfigFieldAdapter(mv, owner, name, access, desc);
-		}
-		/*
-		 * boolean isConstructor = name.contains("<") || mv == null; if
-		 * (isServlet) {
-		 * 
-		 * if(!isInterface && mv != null && name.equals("doGet") &&
-		 * !isConstructor) {
-		 * System.out.println("Metodo SERVLET instrumentalizada: "+ owner
-		 * +"::"+name); mv = new ServletMethodAdapter(mv, owner, name, access,
-		 * desc); } return mv; }
-		 * 
-		 * if (isFilter) {
-		 * 
-		 * 
-		 * System.out.println("Metodo do FILTER: "+ owner +"::"+name);
-		 * 
-		 * }
-		 * 
-		 * if (isFilter && !isInterface && mv != null && name.equals("doFilter")
-		 * && !isConstructor) {
-		 * 
-		 * mv = new FilterMethodAdapter(mv, owner, name, access, desc); //
-		 * System.out.println("Metodo FILTER instrumentalizada: "+ owner //
-		 * +"::"+name); return mv; } // if (isJdbc && !isInterface && mv != null
-		 * && name.equals("executeQuery") && !isConstructor &&
-		 * owner.equals("com/mysql/jdbc/PreparedStatement")) {
-		 * System.out.println("Metodo JDBC instrumentalizado: "+ owner
-		 * +"::"+name); mv = new AddTimerSQLMethodAdapter(mv, owner, name,
-		 * access, desc);
-		 * 
-		 * return mv; } if (!isInterface && mv != null && !isConstructor) { mv =
-		 * new AddTimerMethodAdapter(mv, owner, name, access, desc);
-		 * 
-		 * }
-		 */
+				
 		return mv;
 	}
 

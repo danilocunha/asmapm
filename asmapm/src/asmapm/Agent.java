@@ -168,7 +168,7 @@ public class Agent {
 	}
 
 	public static void leave(String cName, String mName, long time, String sql) {
-
+		//log.log(Level.INFO, "LEAVE METHOD WITH SQL CALL:" + cName + "::" + mName+ " - " + sql);
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().leave(cName,
 				mName, lowThreshold, time, sql);
 

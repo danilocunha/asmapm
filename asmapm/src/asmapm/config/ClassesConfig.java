@@ -73,6 +73,7 @@ public class ClassesConfig {
 	private void loadClassesToInclude() {
 		classesToInclude.add("org.apache.wicket.protocol.http.WicketFilter");
 		classesToInclude.add("com.mysql.jdbc.PreparedStatement");
+		classesToInclude.add("net.sourceforge.jtds.jdbc.JtdsPreparedStatement");
 		
 	}
 	

@@ -1,7 +1,7 @@
 package com.familiaborges.danilo.apm.webui;
 
 import java.util.ArrayList;
-import java.util.Collections;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -11,7 +11,7 @@ import asmapm.model.MethodCall;
 
 import com.familiaborges.danilo.apm.dto.Execution;
 import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.shared.ui.label.ContentMode;
+
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -19,15 +19,19 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Table.ColumnHeaderMode;
+
 import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TreeTable;
+
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 public class RawDetailsWindow extends Window {
 
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	TextArea area = new TextArea();
 	TextArea reverseArea = new TextArea();
 	
@@ -73,8 +77,9 @@ public class RawDetailsWindow extends Window {
 		 * label.setCaption("CallStack"); fields.addComponent(label);
 		 */
 
-		montaCallStackTextAreaForward(e.getCallStackTrace());
-		montaCallStackTextAreaReverse(e.getCallStackTrace());
+		CallStackTrace c = e.getCallStackTrace().getMethodDadCallsWithIndexesOfDadCalls();
+		montaCallStackTextAreaForward(c);
+		montaCallStackTextAreaReverse(c);
 		fields.addComponent(area);
 		fields.addComponent(reverseArea);
 
@@ -87,6 +92,11 @@ public class RawDetailsWindow extends Window {
 		ok.addStyleName("wide");
 		ok.addStyleName("default");
 		ok.addClickListener(new ClickListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
 				close();
@@ -101,6 +111,7 @@ public class RawDetailsWindow extends Window {
 	public void montaCallStackTextAreaForward(CallStackTrace cst) {
 
 		StringBuffer sb = new StringBuffer();
+		area.setCaption("MethodCalls Forward");
 		area.setWidth("80em");
 		area.setSizeFull();
 		//ttable.setColumnHeaderMode(ColumnHeaderMode.);
@@ -125,6 +136,7 @@ public class RawDetailsWindow extends Window {
 	public void montaCallStackTextAreaReverse(CallStackTrace cst) {
 
 		StringBuffer sb = new StringBuffer();
+		reverseArea.setCaption("MethodCalls Reverse");
 		reverseArea.setWidth("80em");
 		reverseArea.setSizeFull();
 		//ttable.setColumnHeaderMode(ColumnHeaderMode.);
@@ -136,15 +148,11 @@ public class RawDetailsWindow extends Window {
 		
 		MethodCall m;
 		
-		int index = l.size();
-		int reverseIndex = 0;
 		while (lite.hasPrevious()) {
 			
 			m = lite.previous();
 			sb.append(m.toString() + "\n");
-			
-
-			index--;
+						
 		}
 		reverseArea.setValue(sb.toString());
 

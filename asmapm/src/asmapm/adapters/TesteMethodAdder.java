@@ -35,9 +35,7 @@ public class TesteMethodAdder extends MethodVisitor {
 		super.visitCode();
 		
 		exception = lvs.newLocal(Type.getType(RuntimeException.class));
-		time = lvs.newLocal(Type.LONG_TYPE);
-		
-		
+		time = lvs.newLocal(Type.LONG_TYPE);				
 		
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
 				"currentTimeMillis", "()J", false);
@@ -78,8 +76,22 @@ public class TesteMethodAdder extends MethodVisitor {
 				"(I)Ljava/lang/String;", false);
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
 		
+		mv.visitLdcInsn("serverUrl");		
+		mv.visitVarInsn(Opcodes.ALOAD, 1);
+		mv.visitTypeInsn(Opcodes.CHECKCAST, "javax/servlet/http/HttpServletRequest");
+		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "javax/servlet/http/HttpServletRequest", "getRequestURL", "()Ljava/lang/StringBuffer;", true);
+		mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuffer", "toString", "()Ljava/lang/String;", false);
+		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
 		
-		mv.visitVarInsn(Opcodes.ALOAD, 0);
+		mv.visitLdcInsn("serverInfo");
+		mv.visitVarInsn(Opcodes.ALOAD, 1);
+		mv.visitTypeInsn(Opcodes.CHECKCAST, "javax/servlet/http/HttpServletRequest");
+		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "javax/servlet/http/HttpServletRequest", "getSession", "()Ljavax/servlet/http/HttpSession;", true);
+		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "javax/servlet/http/HttpSession", "getServletContext", "()Ljavax/servlet/ServletContext;", true);
+		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "javax/servlet/ServletContext", "getServerInfo", "()Ljava/lang/String;", true);
+		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
+		
+		/*mv.visitVarInsn(Opcodes.ALOAD, 0);
 		mv.visitFieldInsn(Opcodes.GETFIELD, cName, "asmapmConfig", "Ljavax/servlet/FilterConfig;");
 		Label pulaNulo = new Label();
 		mv.visitJumpInsn(Opcodes.IFNULL, pulaNulo);
@@ -104,7 +116,7 @@ public class TesteMethodAdder extends MethodVisitor {
 				"javax/servlet/ServletContext", "getServerInfo",
 				"()Ljava/lang/String;", true);
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
-		mv.visitLabel(pulaNulo);	
+		mv.visitLabel(pulaNulo);	*/
 		
 	}
 	

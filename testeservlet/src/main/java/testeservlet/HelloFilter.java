@@ -22,7 +22,8 @@ public class HelloFilter implements Filter {
 			FilterChain arg2) throws IOException, ServletException {
 
 		System.out.println("serverName: " + req.getServerName());
-		System.out.println("serverPort: " + req.getServerPort());
+		System.out.println("serverPort: " + req.getServerPort());		
+		System.out.println("serverUrl: " + ((javax.servlet.http.HttpServletRequest) req).getSession().getServletContext().getServerInfo());
 
 		if (config != null) {
 			System.out.println("contextPath: "

@@ -1,10 +1,6 @@
 package com.familiaborges.danilo.apm.webui;
 
 import com.familiaborges.danilo.apm.dao.ExecutionDAO;
-import com.familiaborges.danilo.apm.dto.Execution;
-import com.familiaborges.danilo.apm.util.PersistenceManager;
-import com.vaadin.addon.jpacontainer.JPAContainer;
-import com.vaadin.addon.jpacontainer.JPAContainerFactory;
 import com.vaadin.data.Item;
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
@@ -22,6 +18,11 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 public class TransactionsView extends VerticalLayout implements View {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	Table t;
 	
@@ -47,7 +48,12 @@ public class TransactionsView extends VerticalLayout implements View {
         //addContainerProperty("startTimeMillis", Long.class, null);
         
         t.addItemClickListener(new ItemClickListener() {
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
             public void itemClick(ItemClickEvent event) {
                 if (event.isDoubleClick()) {
                 	 showExecutionDetailsWindows(event.getItem());
@@ -58,7 +64,12 @@ public class TransactionsView extends VerticalLayout implements View {
         
         t.addActionHandler(new Handler() {
 
-            private Action report = new Action("Create Report");
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			private Action report = new Action("Create Report");
 
             private Action discard = new Action("Discard");
 

@@ -57,6 +57,13 @@ public class FilterMethodAdapter extends LocalVariablesSorter {
 				"()Ljava/lang/String;", false);
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
 		
+		mv.visitLdcInsn("URI");
+		mv.visitVarInsn(Opcodes.ALOAD, 1);	
+		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
+				"javax/servlet/http/HttpServletRequest", "getRequestURI",
+				"()Ljava/lang/String;", false);
+		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
+		
 		mv.visitLdcInsn("serverName");
 		mv.visitVarInsn(Opcodes.ALOAD, 1);	
 		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,

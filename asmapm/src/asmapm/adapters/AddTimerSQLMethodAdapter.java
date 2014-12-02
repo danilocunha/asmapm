@@ -25,7 +25,7 @@ public class AddTimerSQLMethodAdapter extends LocalVariablesSorter {
 	public void visitCode() {
 		super.visitCode();
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
-				"currentTimeMillis", "()J");
+				"currentTimeMillis", "()J", false);
 		time = newLocal(Type.LONG_TYPE);
 
 		mv.visitVarInsn(Opcodes.LSTORE, time);
@@ -33,7 +33,7 @@ public class AddTimerSQLMethodAdapter extends LocalVariablesSorter {
 		super.visitLdcInsn(this.mName);
 		super.visitMethodInsn(Opcodes.INVOKESTATIC,
 				 "asmapm/Agent", "enter",
-				 "(Ljava/lang/String;Ljava/lang/String;)V");
+				 "(Ljava/lang/String;Ljava/lang/String;)V", false);
 		
 		
 		
@@ -47,15 +47,15 @@ public class AddTimerSQLMethodAdapter extends LocalVariablesSorter {
 			super.visitLdcInsn(this.cName);
 			super.visitLdcInsn(this.mName);
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
-					"currentTimeMillis", "()J");
+					"currentTimeMillis", "()J", false);
 			mv.visitVarInsn(Opcodes.LLOAD, time);
 			mv.visitInsn(Opcodes.LSUB);
 			
 			super.visitVarInsn(Opcodes.ALOAD, 0);
-			super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, cName, "toString", "()Ljava/lang/String;"); 
+			super.visitFieldInsn(Opcodes.GETFIELD, cName, "sql", "Ljava/lang/String;"); 
 			super.visitMethodInsn(Opcodes.INVOKESTATIC,
 					 "asmapm/Agent", "leave",
-					 "(Ljava/lang/String;Ljava/lang/String;JLjava/lang/String;)V");
+					 "(Ljava/lang/String;Ljava/lang/String;JLjava/lang/String;)V", false);
 		}
 		super.visitInsn(opcode);
 	}

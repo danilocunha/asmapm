@@ -1,8 +1,6 @@
 package com.familiaborges.danilo.apm.dto;
 
 import java.io.Serializable;
-import java.sql.Blob;
-import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -2,14 +2,19 @@ package asmapm.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.logging.Logger;
 
 public class CallStackTrace implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+
+	
 	
 	private List<MethodCall> methodCalls = null;
 	private HashMap<String, Object> extraData;
@@ -228,7 +233,35 @@ public class CallStackTrace implements Serializable {
 		return sb.toString();
 	}
 
-	
+	public CallStackTrace getMethodDadCallsWithIndexesOfDadCalls() {
+		long time = System.currentTimeMillis();
+		List<MethodCall> list = getMethodCalls();
+		Collections.reverse(list);
+		Iterator<MethodCall> iteMethods = list.iterator();
+		int i=0;
+		while(iteMethods.hasNext()) {
+			MethodCall m = iteMethods.next();
+			int level = m.getLevel();
+			ListIterator<MethodCall> iteDadMethods = list.listIterator(i);
+			int j=i;
+			while((iteDadMethods.hasPrevious()) && level !=0){
+				MethodCall dadMethod = iteDadMethods.previous();
+				j--;
+				if((dadMethod.getLevel()==(level-1))) {
+					m.setIndexOfDadMethodCall(j);
+					this.getMethodCalls().set(i, m);
+					break;
+				}
+				
+				
+			}
+			i++;
+			
+		}
+		time = System.currentTimeMillis() - time;
+		System.out.println("Tempo de execucao: " + time +" ms");
+		return this;
+	}
 
 	
 	public void printOnTextFormat() {

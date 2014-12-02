@@ -79,6 +79,7 @@ public class MyAsmTransformer implements ClassFileTransformer {
 			log.info("##################################################################");
 			log.info("CLASSE PROCESSADA COMO FILTRO: " + cr.getClassName());
 			log.info("##################################################################");
+			
 			return processClassTeste(className, classBeingRedefined,
 					classfileBuffer, cr, ApmType.FILTER);
 			/*
@@ -89,13 +90,18 @@ public class MyAsmTransformer implements ClassFileTransformer {
 		}
 
 		if (!toInclude(dotClassName)) {
-			// System.out.println(dotClassName +
-			// " nao foi instrumentalizada por skip");
+			/*if(dotClassName.startsWith("net.sourceforge.jtds")) {
+			System.out.println(dotClassName +
+			" nao foi instrumentalizada por skip");
+			}*/
 			return classfileBuffer;
 		}
 
 		if ((isPreparedStatement(cr))) {
-			// return classfileBuffer;
+			if(dotClassName.startsWith("net.sourceforge.jtds")) {
+				System.out.println(dotClassName +
+						" foi instrumentalizada como prepared statement");
+			}
 			return processClass(className, classBeingRedefined,
 					classfileBuffer, cr, ApmType.JDBC);
 
@@ -108,9 +114,9 @@ public class MyAsmTransformer implements ClassFileTransformer {
 					classfileBuffer, cr, ApmType.SERVLET);
 		}
 
-		if (className.startsWith("br/gov/")) {
+		/*if (className.startsWith("br/gov/")) {
 			log.info("Processando classe como comum: " + className);
-		}
+		}*/
 		return processClass(className, classBeingRedefined, classfileBuffer,
 				cr, ApmType.COMMOM_CLASS);
 
@@ -251,10 +257,7 @@ public class MyAsmTransformer implements ClassFileTransformer {
 			Class<?> classBeingRedefined, byte[] classFileBuffer,
 			ClassReader cr, ApmType apmType) {
 
-		ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);
-		// TraceClassVisitor tcv = new TraceClassVisitor(cw, pw);
-
-		// ClassTracerAdaptor ca = new ClassTracerAdaptor(cw);
+		ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);		
 		TesteAdaptor ca = new TesteAdaptor(cw, apmType);
 
 		cr.accept(ca, ClassReader.EXPAND_FRAMES);
