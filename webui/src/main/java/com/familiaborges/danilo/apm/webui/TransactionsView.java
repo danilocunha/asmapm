@@ -41,7 +41,7 @@ public class TransactionsView extends VerticalLayout implements View {
         t.setColumnCollapsingAllowed(true);
         t.setColumnReorderingAllowed(true);
         
-        t.setVisibleColumns(new Object[]{"startTimeMillis","callStackTrace", "duration"});
+        t.setVisibleColumns(new Object[]{"startTimeMillis","serverUrl", "duration"});
         
         t.setColumnHeader("startTimeMillis", "Milisegundo de Início");
         t.setColumnHeader("duration", "Duração");

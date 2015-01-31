@@ -1,25 +1,28 @@
 package com.familiaborges.danilo.apm.webui;
 
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.ListIterator;
 
+import asmapm.ApmType;
 import asmapm.model.CallStackTrace;
 import asmapm.model.MethodCall;
 
 import com.familiaborges.danilo.apm.dto.Execution;
 import com.vaadin.event.ShortcutAction.KeyCode;
-
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.Reindeer;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-
+import com.vaadin.ui.Link;
 import com.vaadin.ui.TreeTable;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -114,7 +117,7 @@ public class ExecutionDetailsWindow extends Window {
 
 		ttable.addContainerProperty("Name", String.class, null);
 		ttable.addContainerProperty("Duração", Long.class, null);
-		ttable.addContainerProperty("SQL", String.class, null);
+		ttable.addContainerProperty("Type", CssLayout.class, null);
 		ttable.setWidth("50em");
 		ttable.setSizeFull();
 		// ttable.setColumnHeaderMode(ColumnHeaderMode.);
@@ -143,6 +146,14 @@ public class ExecutionDetailsWindow extends Window {
 					dadIndex = l.get(dadIndex).getIndexOfDadMethodCall();
 				}
 			}
+			if (m.getType() == ApmType.HTTP_CLIENT) {
+				m.setVisibleOnCallTree(true);
+				int dadIndex = m.getIndexOfDadMethodCall();
+				while (dadIndex != 0) {
+					l.get(dadIndex).setVisibleOnCallTree(true);
+					dadIndex = l.get(dadIndex).getIndexOfDadMethodCall();
+				}
+			}
 			index++;
 
 		}
@@ -157,7 +168,7 @@ public class ExecutionDetailsWindow extends Window {
 
 				ttable.addItem(
 						new Object[] { m.toString(), m.getExecutionTime(),
-								m.getSql() }, index);
+								getTypeLinkOfCall(m) }, index);
 				if (m.getIndexOfDadMethodCall() != null) {
 					ttable.setParent(index, m.getIndexOfDadMethodCall());
 				}
@@ -166,6 +177,43 @@ public class ExecutionDetailsWindow extends Window {
 
 		}
 
+	}
+
+	public Object getTypeLinkOfCall(final MethodCall m) {
+		CssLayout layout = new CssLayout();
+		if (m.getSql() != null) {			
+			Button button = new Button ("SQL",
+			new Button.ClickListener() {
+			   
+				private static final long serialVersionUID = 1L;
+
+				public void buttonClick(ClickEvent event) {
+			    	Window w = new SqlDetailsWindow(m);
+			        UI.getCurrent().addWindow(w);
+			        w.focus();	
+			    }
+			});
+			button.setStyleName(Reindeer.BUTTON_LINK);
+			layout.addComponent(button);			
+		}
+		
+		if (m.getType() == ApmType.HTTP_CLIENT) {			
+			Button button = new Button ("HTTP",
+			new Button.ClickListener() {
+			   
+				private static final long serialVersionUID = 1L;
+
+				public void buttonClick(ClickEvent event) {
+			    	Window w = new HttpDetailsWindow(m);
+			        UI.getCurrent().addWindow(w);
+			        w.focus();	
+			    }
+			});
+			button.setStyleName(Reindeer.BUTTON_LINK);
+			layout.addComponent(button);			
+		}
+		
+		return layout;
 	}
 
 }

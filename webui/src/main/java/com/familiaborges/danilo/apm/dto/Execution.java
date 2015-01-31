@@ -76,6 +76,11 @@ public class Execution implements Serializable {
     public void setCallStackTrace(CallStackTrace callStackTrace) {
         this.callStackTraceAsByteArray = SerializationUtils.serialize((Serializable) callStackTrace);
     }
+    
+    @Transient
+    public String getServerUrl() {
+        return getCallStackTrace().getExtraData().get("serverUrl").toString();
+    }
 	
 	
 }
