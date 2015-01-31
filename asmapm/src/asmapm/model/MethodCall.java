@@ -2,6 +2,8 @@ package asmapm.model;
 
 import java.io.Serializable;
 
+import asmapm.ApmType;
+
 public class MethodCall implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -19,8 +21,11 @@ public class MethodCall implements Serializable {
 	private long threadid;
 	private String threadName;
 	private String sql;
+	
 	private Integer indexOfDadMethodCall;
 	private boolean isVisibleOnCallTree;
+	private String typeData;//Some data according to the apmType
+	private ApmType type;
 
 	public String getClassName() {
 		return className;
@@ -113,6 +118,22 @@ public class MethodCall implements Serializable {
 
 	public void setThreadName(String threadName) {
 		this.threadName = threadName;
+	}
+	
+	public String getTypeData() {
+		return typeData;
+	}
+
+	public void setTypeData(String typeData) {
+		this.typeData = typeData;
+	}
+
+	public ApmType getType() {
+		return type;
+	}
+
+	public void setType(ApmType type) {
+		this.type = type;
 	}
 
 	public String getSql() {

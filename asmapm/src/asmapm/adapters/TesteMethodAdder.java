@@ -91,32 +91,7 @@ public class TesteMethodAdder extends MethodVisitor {
 		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "javax/servlet/ServletContext", "getServerInfo", "()Ljava/lang/String;", true);
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
 		
-		/*mv.visitVarInsn(Opcodes.ALOAD, 0);
-		mv.visitFieldInsn(Opcodes.GETFIELD, cName, "asmapmConfig", "Ljavax/servlet/FilterConfig;");
-		Label pulaNulo = new Label();
-		mv.visitJumpInsn(Opcodes.IFNULL, pulaNulo);
-		mv.visitLdcInsn("contextPath");
-		mv.visitVarInsn(Opcodes.ALOAD, 0);
-		mv.visitFieldInsn(Opcodes.GETFIELD, cName, "asmapmConfig", "Ljavax/servlet/FilterConfig;");
-		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
-				"javax/servlet/FilterConfig", "getServletContext",
-				"()Ljavax/servlet/ServletContext;", true);
-		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
-				"javax/servlet/ServletContext", "getContextPath",
-				"()Ljava/lang/String;", true);
-		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
 		
-		mv.visitLdcInsn("serverInfo");
-		mv.visitVarInsn(Opcodes.ALOAD, 0);
-		mv.visitFieldInsn(Opcodes.GETFIELD, cName, "asmapmConfig", "Ljavax/servlet/FilterConfig;");
-		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
-				"javax/servlet/FilterConfig", "getServletContext",
-				"()Ljavax/servlet/ServletContext;", true);
-		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
-				"javax/servlet/ServletContext", "getServerInfo",
-				"()Ljava/lang/String;", true);
-		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent","addExtraData","(Ljava/lang/String;Ljava/lang/Object;)V", false);
-		mv.visitLabel(pulaNulo);	*/
 		
 	}
 	

@@ -9,7 +9,6 @@ import org.objectweb.asm.commons.AnalyzerAdapter;
 import org.objectweb.asm.commons.LocalVariablesSorter;
 
 import asmapm.ApmType;
-import asmapm.adapters.FilterConfigFieldAdapter;
 import asmapm.adapters.TesteMethodAdder;
 
 public class TesteAdaptor extends ClassVisitor {

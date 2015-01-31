@@ -11,6 +11,7 @@ import org.objectweb.asm.commons.LocalVariablesSorter;
 import asmapm.adapters.AddTimerMethodAdapter;
 import asmapm.adapters.AddTimerSQLMethodAdapter;
 import asmapm.adapters.FilterMethodAdapter;
+import asmapm.adapters.HttpClientMethodAdapter;
 import asmapm.adapters.ServletMethodAdapter;
 import asmapm.config.ClassesConfig;
 
@@ -20,10 +21,12 @@ public class AddTimerAdaptor extends ClassVisitor {
 	private boolean isJdbc;
 	private boolean isFilter = false;
 	private boolean isServlet = false;
+	private ApmType apmType;
 
 	public AddTimerAdaptor(ClassVisitor cv, ApmType apmType) {
 		super(Opcodes.ASM4, cv);
-
+		
+		this.apmType = apmType;
 		ApmType at = ApmType.values()[apmType.ordinal()];
 		switch (at) {
 		case JDBC:
@@ -74,12 +77,32 @@ public class AddTimerAdaptor extends ClassVisitor {
 					&& !isConstructor) {
 				System.out.println("Metodo SERVLET instrumentalizada: " + owner
 						+ "::" + name);
+				
 				ServletMethodAdapter sma = new ServletMethodAdapter(mv, owner,
 						name, access, desc);
 				sma.aa = new AnalyzerAdapter(owner, access, name, desc, sma);
 				sma.lvs = new LocalVariablesSorter(access, desc, sma.aa);
 
 				return sma.lvs;
+
+			}
+			return mv;
+		}
+		
+		if (this.apmType.equals(ApmType.HTTP_CLIENT)) {
+			/*
+			 * System.out.println("Entrou como servlet: " + owner + "::" +
+			 * name);
+			 */
+			if (!isInterface && mv != null && name.equals("executeMethod")
+					&& !isConstructor && desc.equals("(Lorg/apache/commons/httpclient/HttpMethod;)I")) {
+				System.out.println("Metodo HTTP CLIENT EXECUTE METHOD instrumentalizada: " + owner
+						+ "::" + name + "Desc:" + desc);
+				
+				mv = new HttpClientMethodAdapter(mv, owner, name, access,
+						 desc);
+				
+				return mv;
 
 			}
 			return mv;

@@ -74,6 +74,7 @@ public class ClassesConfig {
 		classesToInclude.add("org.apache.wicket.protocol.http.WicketFilter");
 		classesToInclude.add("com.mysql.jdbc.PreparedStatement");
 		classesToInclude.add("net.sourceforge.jtds.jdbc.JtdsPreparedStatement");
+		classesToInclude.add("org.apache.commons.httpclient.HttpClient");
 		
 	}
 	

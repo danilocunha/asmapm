@@ -173,5 +173,19 @@ public class Agent {
 				mName, lowThreshold, time, sql);
 
 	}
+	
+	public static void leaveHttpClient(String cName, String mName, long time, Object url) {
+		//log.log(Level.INFO, "LEAVE METHOD WITH SQL CALL:" + cName + "::" + mName+ " - " + sql);
+		CallStackTraceBuilderFactory.getCallStackTraceBuilder().leaveHttpClient(cName,
+				mName, lowThreshold, time, url.toString(), ApmType.HTTP_CLIENT);
+
+	}
+	
+	public static void leave(String cName, String mName, long time, ApmType type) {
+		//log.log(Level.INFO, "LEAVE METHOD WITH SQL CALL:" + cName + "::" + mName+ " - " + sql);
+		CallStackTraceBuilderFactory.getCallStackTraceBuilder().leave(cName,
+				mName, lowThreshold, time, type);
+
+	}
 
 }

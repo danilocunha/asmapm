@@ -106,6 +106,16 @@ public class MyAsmTransformer implements ClassFileTransformer {
 					classfileBuffer, cr, ApmType.JDBC);
 
 		}
+		
+		if ((isHttpClient(cr))) {
+			
+			System.out.println(dotClassName +
+						" foi instrumentalizada como prepared statement");
+			
+			return processClass(className, classBeingRedefined,
+					classfileBuffer, cr, ApmType.HTTP_CLIENT);
+
+		}
 
 		if (isHttpServlet(cr)) {
 			log.info("Processando como Servlet a classe: " + className);
@@ -132,6 +142,18 @@ public class MyAsmTransformer implements ClassFileTransformer {
 		}
 		return false;
 	}
+	
+	private boolean isHttpClient(ClassReader cr) {
+		String name = cr.getClassName();
+
+		
+			if (name.equals("org/apache/commons/httpclient/HttpClient")) {
+				return true;
+			}
+		
+		return false;
+	}
+	
 
 	private boolean isServletFilter(ClassReader cr) {
 

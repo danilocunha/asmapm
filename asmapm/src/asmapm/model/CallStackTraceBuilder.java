@@ -1,6 +1,7 @@
 package asmapm.model;
 
 import asmapm.Agent;
+import asmapm.ApmType;
 import asmapm.queue.AssyncRabbitMQSender;
 import asmapm.queue.Send;
 
@@ -109,6 +110,47 @@ public class CallStackTraceBuilder {
 		state.decLevel();
 
 	}
+	
+	public void leave(String cName, String mName, long lowThreshold, long executionTime,
+			ApmType type) {
+		CallStackTrace state = traceBuilder.get();
+		if (!state.isBuildingTrace()) {
+			return;
+		}
+		
+		MethodCall method = new MethodCall();
+		method.setClassName(cName);
+		method.setMethodName(mName);
+		method.setExecutionTime(executionTime);
+		method.setLevel(state.getLevel());		
+
+		state.getMethodCalls().add(method);
+
+		// System.out.println("LEVEL: "+ state.getLevel() + " - " +
+		// cName+"::"+mName+" Tempo: " + executionTime + " SQL: " + sql);
+		state.decLevel();
+	}
+	
+	public void leaveHttpClient(String cName, String mName, long lowThreshold,
+			long executionTime, String url, ApmType apmType) {
+		CallStackTrace state = traceBuilder.get();
+		if (!state.isBuildingTrace()) {
+			return;
+		}
+		
+		MethodCall method = new MethodCall();
+		method.setClassName(cName);
+		method.setMethodName(mName);
+		method.setExecutionTime(executionTime);
+		method.setLevel(state.getLevel());		
+		method.setTypeData(url);
+		method.setType(apmType);
+		state.getMethodCalls().add(method);
+		 System.out.println("LEVEL: "+ state.getLevel() + " - " +
+				 cName+"::"+mName+" Tempo: " + executionTime + " URL: " + url);
+		state.decLevel();
+		
+	}
 
 	public void leave(String cName, String mName, long threshold,
 			long executionTime, String sql) {
@@ -166,6 +208,10 @@ public class CallStackTraceBuilder {
 		CallStackTrace state = traceBuilder.get();
 		return state;		
 	}
+
+	
+
+	
 
 }
 
