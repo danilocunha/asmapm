@@ -36,7 +36,7 @@ public class Agent {
 	
 	private static Agent agent;
 
-	private static long lowThreshold = 200;
+	public static long lowThreshold = 200;
 	
 	private LinkedBlockingQueue<CallStackTrace> queue;
 	
@@ -92,15 +92,19 @@ public class Agent {
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().addExtraData(key, value);
 	}
 
-	public static void startprofile(String cName, String mName) {
+	public static boolean startprofile(String cName, String mName) {
 		CallStackTrace state = CallStackTraceBuilderFactory.getCallStackTraceBuilder().getState();
 		if(!state.isBuildingTrace()) {
-			log.log(Level.INFO, "START PROFILE" + cName + "::" + mName + " Thread ID" + Thread.currentThread().getId());
+			log.log(Level.INFO, "START PROFILE: " + cName + "::" + mName + " Thread ID" + Thread.currentThread().getId());
 			CallStackTraceBuilderFactory.getCallStackTraceBuilder().startprofile(
 					mName, cName);
+			return true;
 		} else {
-			log.log(Level.INFO, "PROFILE JA EXISTENTE PARA CHAMADA" + cName + "::" + mName);
-		}		
+			enter(cName, mName);
+			log.log(Level.INFO, "PROFILE JA EXISTENTE PARA CHAMADA: " + cName + "::" + mName);
+			log.log(Level.INFO, "PROFILE JA INICIOU EM: " + state.getClassName() + "::" + state.getMethodName());
+		}
+		return false;		
 
 	}
 
@@ -113,10 +117,7 @@ public class Agent {
 	
 	public static void endprofile(String cName, String mName,
 			long executionTime) {
-		log.log(Level.INFO, "END PROFILE " + cName + "::" + mName);
-		System.out.println();
-		System.out.println();
-		System.out.println();
+		
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().endprofile(
 				mName, cName, lowThreshold, executionTime);
 

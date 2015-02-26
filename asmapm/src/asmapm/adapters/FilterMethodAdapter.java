@@ -16,7 +16,7 @@ public class FilterMethodAdapter extends LocalVariablesSorter {
 	private String cName;
 	private String mName;
 	private Label lTryBlockStart = new Label(), lTryBlockEnd = new Label(),
-			lCatchBlockStart = new Label();
+			lCatchBlockStart = new Label(), isNotStart = new Label();
 
 	public FilterMethodAdapter(MethodVisitor mv, String cName, String mName,
 			int access, String desc) {
@@ -40,10 +40,10 @@ public class FilterMethodAdapter extends LocalVariablesSorter {
 		super.visitLdcInsn(this.cName);
 		super.visitLdcInsn(this.mName);
 		super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
-				"startprofile", "(Ljava/lang/String;Ljava/lang/String;)V", false);
-
+				"startprofile", "(Ljava/lang/String;Ljava/lang/String;)Z", false);
+		super.visitJumpInsn(Opcodes.IFEQ, isNotStart);
 		getFilterData();
-		
+		mv.visitLabel(isNotStart);
 		exception = newLocal(Type.getType(RuntimeException.class));
 		mv.visitLabel(lTryBlockStart);
 
@@ -108,6 +108,7 @@ public class FilterMethodAdapter extends LocalVariablesSorter {
 	public void visitInsn(int opcode) {
 		if ((opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN)
 				|| opcode == Opcodes.ATHROW) {
+			
 			super.visitLdcInsn(this.cName);
 			super.visitLdcInsn(this.mName);
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
@@ -119,11 +120,10 @@ public class FilterMethodAdapter extends LocalVariablesSorter {
 			/*
 			 * super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, cName, "toString",
 			 * "()Ljava/lang/String;");
-			 */
-			super.visitLdcInsn("testeeee");
+			 */			
 			super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
 					"endprofile",
-					"(Ljava/lang/String;Ljava/lang/String;JLjava/lang/String;)V", false);
+					"(Ljava/lang/String;Ljava/lang/String;J)V", false);
 		}
 		super.visitInsn(opcode);
 	}

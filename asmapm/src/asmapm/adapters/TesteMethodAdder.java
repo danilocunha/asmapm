@@ -18,7 +18,7 @@ public class TesteMethodAdder extends MethodVisitor {
 	private String cName;
 	private String mName;
 	private Label lTryBlockStart = new Label(), lTryBlockEnd = new Label(),
-			lCatchBlockStart = new Label();
+			lCatchBlockStart = new Label(), isNotStart = new Label();
 
 	public TesteMethodAdder(MethodVisitor mv, String cName, String mName,
 			int access, String desc) {
@@ -45,10 +45,11 @@ public class TesteMethodAdder extends MethodVisitor {
 		super.visitLdcInsn(this.cName);
 		super.visitLdcInsn(this.mName);
 		super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
-				"startprofile", "(Ljava/lang/String;Ljava/lang/String;)V", false);
+				"startprofile", "(Ljava/lang/String;Ljava/lang/String;)Z", false);
+		super.visitJumpInsn(Opcodes.IFEQ, isNotStart);
 
 		getFilterData();
-		
+		mv.visitLabel(isNotStart);
 		mv.visitLabel(lTryBlockStart);
 		
 		
@@ -99,6 +100,7 @@ public class TesteMethodAdder extends MethodVisitor {
 	public void visitInsn(int opcode) {
 		if ((opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN)
 				|| opcode == Opcodes.ATHROW) {
+			
 			super.visitLdcInsn(this.cName);
 			super.visitLdcInsn(this.mName);
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",

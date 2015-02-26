@@ -1,6 +1,7 @@
 package asmapm.config;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -34,6 +35,18 @@ public class ClassesConfig {
 	
 	private void loadJdbcClasses() {
 		jdbcClasses.add("com.mysql");
+		jdbcClasses.add("net.sourceforge.jtds");
+		jdbcClasses.add("com.microsoft.sqlserver");
+	}
+	
+	public boolean isJdbcClass(String dotClassName) {
+		Iterator<String> ite = jdbcClasses.iterator();
+		while(ite.hasNext()) {
+			if(dotClassName.startsWith(ite.next())){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public List<String> getJdbcClasses() {
@@ -64,6 +77,10 @@ public class ClassesConfig {
 		classesToSkip.add("com.mysql");
 		classesToSkip.add("net.sourceforge.jtds");
 		classesToSkip.add("com.fastsearch");
+		classesToSkip.add("gnu");
+		classesToSkip.add("EDU");
+		classesToSkip.add("bsh");
+		classesToSkip.add("com.microsoft");
 	}
 	
 	public List<String> getClassesToSkip() {

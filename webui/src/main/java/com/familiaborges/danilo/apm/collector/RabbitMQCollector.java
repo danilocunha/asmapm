@@ -113,10 +113,10 @@ public class RabbitMQCollector implements Runnable {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		CallStackTrace state = org.apache.commons.lang3.SerializationUtils
 				.deserialize(delivery.getBody());
-		System.out.println(dateFormat.format(Calendar.getInstance().getTime()));
+		System.out.println(dateFormat.format(new Date(state.getStopTimestamp())));
 		System.out
 				.println(dateFormat.format(new Date(state.getStartTimestamp())));
-		System.out.println(state.getStartTimestamp());
+		//System.out.println(state.getStartTimestamp());
 		try {
 			System.out.println(sizeof(state) + " Bytes");
 		} catch (IOException e) {
@@ -124,15 +124,17 @@ public class RabbitMQCollector implements Runnable {
 			e.printStackTrace();
 		}
 
-		System.out.println("contextPath: "
-				+ state.getExtraData().get("contextPath"));
-		System.out.println("serverName: "
+		long duration = state.getStopTimestamp() - state.getStartTimestamp();
+		System.out.println("URL: "
+				+ state.getExtraData().get("serverUrl") + " - Time Spent: "+ duration);
+		/*System.out.println("serverName: "
 				+ state.getExtraData().get("serverName"));
 		System.out.println("serverPort: "
 				+ state.getExtraData().get("serverPort"));
 		System.out.println("serverInfo: "
 				+ state.getExtraData().get("serverInfo"));
 		System.out.println("size: " + state.getExtraData().size());
+		System.out.println("duration: " + (state.getStopTimestamp() - state.getStartTimestamp()));*/
 
 		state.printOnTextFormat();
 		ExecutionDAO dao = new ExecutionDAO();

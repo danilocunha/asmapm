@@ -98,7 +98,7 @@ public class MyAsmTransformer implements ClassFileTransformer {
 		}
 
 		if ((isPreparedStatement(cr))) {
-			if(dotClassName.startsWith("net.sourceforge.jtds")) {
+			if(ClassesConfig.getInstance().isJdbcClass(dotClassName)) {
 				System.out.println(dotClassName +
 						" foi instrumentalizada como prepared statement");
 			}
@@ -251,7 +251,7 @@ public class MyAsmTransformer implements ClassFileTransformer {
 
 		cr.accept(ca, ClassReader.EXPAND_FRAMES);
 
-		File outputDir = new File("/tmp/classes/");
+		/*File outputDir = new File("/tmp/classes/");
 		outputDir.mkdirs();
 		DataOutputStream dout;
 		String[] classNames = className.split("/");
@@ -267,7 +267,7 @@ public class MyAsmTransformer implements ClassFileTransformer {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 
 		// TraceClassVisitor cv = new TraceClassVisitor(cw, this.pw);
 		return cw.toByteArray();

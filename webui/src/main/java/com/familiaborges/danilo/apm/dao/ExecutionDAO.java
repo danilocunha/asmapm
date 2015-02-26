@@ -7,10 +7,15 @@ import com.vaadin.addon.jpacontainer.JPAContainerFactory;
 public class ExecutionDAO extends GenericDAO {
 
 	public void save(Execution execution) {
+		try {
 		getEntityManager().getTransaction().begin();
 		getEntityManager().persist(execution);
 		getEntityManager().getTransaction().commit();
 		getEntityManager().close();
+		} catch(Exception e) {
+			System.out.println(execution.getDuration());
+			e.printStackTrace();
+		}
 	}
 	
 	public JPAContainer<Execution> getJPAContainer() {
