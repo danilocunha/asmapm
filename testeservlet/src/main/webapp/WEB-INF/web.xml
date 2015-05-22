@@ -12,11 +12,11 @@
     	<res-auth>Container</res-auth>
     </resource-ref> -->
   
-   	<resource-ref>    	
+   <!-- 	<resource-ref>    	
     	<res-ref-name>jdbc/SisnewsInternetDS1</res-ref-name>
     	<res-type>javax.sql.DataSource</res-type>
     	<res-auth>Container</res-auth>    	
-    </resource-ref>
+    </resource-ref> -->
     <!--
     <resource-ref>
     	<description>DB Connection 2</description>
@@ -25,14 +25,14 @@
     	<res-auth>Container</res-auth>
     </resource-ref> -->
     
-	<filter>
+	<!-- <filter>
 		<filter-name>HelloFilter</filter-name>
 		<filter-class>testeservlet.HelloFilter</filter-class>
 	</filter>
 	<filter-mapping>
 		<filter-name>HelloFilter</filter-name>
 		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+	</filter-mapping> -->
 	
 	<servlet>
 		<servlet-name>HelloWorld</servlet-name>
@@ -44,6 +44,11 @@
 		<servlet-class>testeservlet.NullExceptionServlet</servlet-class>
 	</servlet>
 
+	<servlet>
+		<servlet-name>HtmlUnitTest</servlet-name>
+		<servlet-class>testeservlet.HtmlUnitTest</servlet-class>
+	</servlet>
+	
 	<servlet-mapping>
 		<servlet-name>HelloWorld</servlet-name>
 		<url-pattern>/HelloWorld</url-pattern>
@@ -52,5 +57,10 @@
 	<servlet-mapping>
 		<servlet-name>NullExceptionServlet</servlet-name>
 		<url-pattern>/NullExceptionServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>HtmlUnitTest</servlet-name>
+		<url-pattern>/HtmlUnitTest</url-pattern>
 	</servlet-mapping>
 </web-app>

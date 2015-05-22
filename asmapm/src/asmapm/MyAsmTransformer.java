@@ -30,7 +30,7 @@ import asmapm.config.ClassesConfig;
 
 public class MyAsmTransformer implements ClassFileTransformer {
 
-	private final static Logger log = Logger.getLogger("Tranformer");
+	private final static Logger log = Logger.getLogger("ClassFileTranformer");
 
 	private ClassLoader classLoader;
 
@@ -73,87 +73,104 @@ public class MyAsmTransformer implements ClassFileTransformer {
 			// Bootstrapclass
 			return classfileBuffer;
 		}
+
 		ClassReader cr = new ClassReader(classfileBuffer);
 
 		if ((isServletFilter(cr.getClassName()))) {
-			log.info("##################################################################");
-			log.info("CLASSE PROCESSADA COMO FILTRO: " + cr.getClassName());
-			log.info("##################################################################");
 			
-			return processClassTeste(className, classBeingRedefined,
-					classfileBuffer, cr, ApmType.FILTER);
-			/*
-			 * return processClass(className, classBeingRedefined,
-			 * classfileBuffer, cr, ApmType.SERVLET);
-			 */
+			  log.info(
+			  "##################################################################"
+			  ); log.info("CLASSE PROCESSADA COMO FILTRO: " +
+			  cr.getClassName()); log.info(
+			  "##################################################################"
+			  );
+			 
+			
+			return processClass(className, classBeingRedefined,
+					classfileBuffer, cr, ApmType.FILTER);			
 
-		}
-
-		if (!toInclude(dotClassName)) {
-			/*if(dotClassName.startsWith("net.sourceforge.jtds")) {
-			System.out.println(dotClassName +
-			" nao foi instrumentalizada por skip");
-			}*/
-			return classfileBuffer;
 		}
 
 		if ((isPreparedStatement(cr))) {
-			if(ClassesConfig.getInstance().isJdbcClass(dotClassName)) {
-				System.out.println(dotClassName +
-						" foi instrumentalizada como prepared statement");
+			if (ClassesConfig.getInstance().isJdbcClass(dotClassName)) {
+				log.info("Instrumentalizando como JDBC: " + dotClassName);
+				return processClass(className, classBeingRedefined,
+						classfileBuffer, cr, ApmType.JDBC);
 			}
-			return processClass(className, classBeingRedefined,
-					classfileBuffer, cr, ApmType.JDBC);
-
 		}
-		
+
+		if (!toInclude(dotClassName)) {
+			/*
+			 * if(dotClassName.startsWith("net.sourceforge.jtds")) {
+			 * System.out.println(dotClassName +
+			 * " nao foi instrumentalizada por skip"); }
+			 */
+			return classfileBuffer;
+		}
+
 		if ((isHttpClient(cr))) {
-			
-			System.out.println(dotClassName +
-						" foi instrumentalizada como prepared statement");
-			
+
+			log.info("Instrumentalizando como HTTP CLIENT: " + dotClassName);
+
 			return processClass(className, classBeingRedefined,
 					classfileBuffer, cr, ApmType.HTTP_CLIENT);
 
 		}
 
 		if (isHttpServlet(cr)) {
-			log.info("Processando como Servlet a classe: " + className);
+			log.info("Instrumentalizando como SERVLET: " + className);
 			// return classfileBuffer;
 			return processClass(className, classBeingRedefined,
 					classfileBuffer, cr, ApmType.SERVLET);
 		}
 
-		/*if (className.startsWith("br/gov/")) {
-			log.info("Processando classe como comum: " + className);
-		}*/
+		/*
+		 * if (className.startsWith("br/gov/")) {
+		 * log.info("Processando classe como comum: " + className); }
+		 */
 		return processClass(className, classBeingRedefined, classfileBuffer,
 				cr, ApmType.COMMOM_CLASS);
 
 	}
 
 	private boolean isPreparedStatement(ClassReader cr) {
-		String[] interfaces = cr.getInterfaces();
+		// Already known PreparedStatement classes
+		String dotClassName = cr.getClassName().replace('/', '.');
 
+		if (ClassesConfig.getInstance().getPreparedStatementClasses()
+				.contains(dotClassName)) {
+			log.info("##################################################################");
+			log.info("ACHEI UM PreparedStatement conhecido: "
+					+ cr.getClassName());
+			log.info("##################################################################");
+			return true;
+		}
+
+		// Try detect PreparedStatementClasses
+
+		String[] interfaces = cr.getInterfaces();
 		for (String interfaceName : interfaces) {
 			if (interfaceName.equals("java/sql/PreparedStatement")) {
+				log.info("##################################################################");
+				log.info("ACHEI UM PreparedStatement desconhecido: "
+						+ cr.getClassName());
+				log.info("##################################################################");
 				return true;
 			}
 		}
+
 		return false;
 	}
-	
+
 	private boolean isHttpClient(ClassReader cr) {
 		String name = cr.getClassName();
 
-		
-			if (name.equals("org/apache/commons/httpclient/HttpClient")) {
-				return true;
-			}
-		
+		if (name.equals("org/apache/commons/httpclient/HttpClient")) {
+			return true;
+		}
+
 		return false;
 	}
-	
 
 	private boolean isServletFilter(ClassReader cr) {
 
@@ -243,45 +260,8 @@ public class MyAsmTransformer implements ClassFileTransformer {
 	private byte[] processClass(String className, Class<?> classBeingRedefined,
 			byte[] classFileBuffer, ClassReader cr, ApmType apmType) {
 
-		ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);
-		// TraceClassVisitor tcv = new TraceClassVisitor(cw, pw);
-
-		// ClassTracerAdaptor ca = new ClassTracerAdaptor(cw);
-		AddTimerAdaptor ca = new AddTimerAdaptor(cw, apmType);
-
-		cr.accept(ca, ClassReader.EXPAND_FRAMES);
-
-		/*File outputDir = new File("/tmp/classes/");
-		outputDir.mkdirs();
-		DataOutputStream dout;
-		String[] classNames = className.split("/");
-		String lastOne = classNames[classNames.length - 1];
-		try {
-			dout = new DataOutputStream(new FileOutputStream(new File(
-					outputDir, lastOne + ".class")));
-			dout.write(cw.toByteArray());
-			dout.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-
-		// TraceClassVisitor cv = new TraceClassVisitor(cw, this.pw);
-		return cw.toByteArray();
-		// return classFileBuffer;
-
-	}
-
-	private byte[] processClassTeste(String className,
-			Class<?> classBeingRedefined, byte[] classFileBuffer,
-			ClassReader cr, ApmType apmType) {
-
 		ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);		
-		TesteAdaptor ca = new TesteAdaptor(cw, apmType);
-
+		AddTimerAdaptor ca = new AddTimerAdaptor(cw, apmType);
 		cr.accept(ca, ClassReader.EXPAND_FRAMES);
 
 		File outputDir = new File("/tmp/classes/");
@@ -294,13 +274,39 @@ public class MyAsmTransformer implements ClassFileTransformer {
 					outputDir, lastOne + ".class")));
 			dout.write(cw.toByteArray());
 			dout.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+		} catch (FileNotFoundException e) { // TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// TODO Auto-generated catch
+
 			e.printStackTrace();
 		}
+
+		// TraceClassVisitor cv = new TraceClassVisitor(cw, this.pw);
+		return cw.toByteArray();
+		// return classFileBuffer;
+
+	}
+
+	private byte[] processClassTeste(String className,
+			Class<?> classBeingRedefined, byte[] classFileBuffer,
+			ClassReader cr, ApmType apmType) {
+
+		ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);
+		TesteAdaptor ca = new TesteAdaptor(cw, apmType);
+
+		cr.accept(ca, ClassReader.EXPAND_FRAMES);
+
+		/*
+		 * File outputDir = new File("/tmp/classes/"); outputDir.mkdirs();
+		 * DataOutputStream dout; String[] classNames = className.split("/");
+		 * String lastOne = classNames[classNames.length - 1]; try { dout = new
+		 * DataOutputStream(new FileOutputStream(new File( outputDir, lastOne +
+		 * ".class"))); dout.write(cw.toByteArray()); dout.close(); } catch
+		 * (FileNotFoundException e) { // TODO Auto-generated catch block
+		 * e.printStackTrace(); } catch (IOException e) { // TODO Auto-generated
+		 * catch block e.printStackTrace(); }
+		 */
 
 		// TraceClassVisitor cv = new TraceClassVisitor(cw, this.pw);
 		return cw.toByteArray();

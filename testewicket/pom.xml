@@ -42,7 +42,7 @@
 	</licenses>
 	<properties>
 		<wicket.version>6.5.0</wicket.version>
-		<jetty.version>7.6.3.v20120416</jetty.version>
+		<jetty.version>9.2.3.v20140905</jetty.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
@@ -84,11 +84,11 @@
 		<dependency>
 			<groupId>org.eclipse.jetty.aggregate</groupId>
 			<artifactId>jetty-all-server</artifactId>
-			<version>${jetty.version}</version>
-			<scope>provided</scope>
+			<version>8.1.16.v20140903</version>
 		</dependency>
 	</dependencies>
 	<build>
+	<finalName>testewicket</finalName>
 		<resources>
 			<resource>
 				<filtering>false</filtering>
@@ -136,24 +136,9 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
+				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
-				<version>${jetty.version}</version>
-				<configuration>
-					<connectors>
-						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-							<port>8080</port>
-							<maxIdleTime>3600000</maxIdleTime>
-						</connector>
-						<connector implementation="org.eclipse.jetty.server.ssl.SslSocketConnector">
-							<port>8443</port>
-							<maxIdleTime>3600000</maxIdleTime>
-							<keystore>${project.build.directory}/test-classes/keystore</keystore>
-							<password>wicket</password>
-							<keyPassword>wicket</keyPassword>
-						</connector>
-					</connectors>
-				</configuration>
+				<version>${jetty.version}</version>				
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

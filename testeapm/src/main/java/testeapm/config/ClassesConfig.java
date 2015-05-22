@@ -1,4 +1,4 @@
-package asmapm.config;
+package testeapm.config;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -94,6 +94,8 @@ public class ClassesConfig {
 		classesToSkip.add("EDU");
 		classesToSkip.add("bsh");
 		classesToSkip.add("com.microsoft");
+		classesToSkip.add("com.mchange");
+		classesToSkip.add("edu");
 	}
 	
 	public List<String> getClassesToSkip() {

@@ -1,6 +1,9 @@
 package com.familiaborges.danilo.apm.dto;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,7 +26,7 @@ public class Execution implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private long idExecution;
+	private String idExecution;
 	
 	private long startTimeMillis;
 	
@@ -33,11 +36,11 @@ public class Execution implements Serializable {
 
 	@Id
 	@Column(name="id_execution")
-	public long getIdExecution() {
+	public String getIdExecution() {
 		return idExecution;
 	}
 
-	public void setIdExecution(long idExecution) {
+	public void setIdExecution(String idExecution) {
 		this.idExecution = idExecution;
 	}
 	
@@ -48,6 +51,14 @@ public class Execution implements Serializable {
 	public void setStartTimeMillis(long startTimeMillis) {
 		this.startTimeMillis = startTimeMillis;
 	}
+	
+	@Transient
+    public String getDataHora() {
+		Calendar calendar = Calendar.getInstance();
+	    calendar.setTimeInMillis(startTimeMillis);
+	    DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+		return df.format(calendar.getTime());
+    }
 
 	@Column(name="duration")
 	public long getDuration() {

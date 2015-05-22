@@ -4,7 +4,6 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.familiaborges.danilo.apm</groupId>
 	<artifactId>webui</artifactId>
-	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Vaadin Web Application</name>
 
@@ -79,8 +78,7 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>3.0.1</version>
-			<scope>provided</scope>
+			<version>3.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.rabbitmq</groupId>
@@ -122,6 +120,11 @@
 			<artifactId>jpacontainer-addon</artifactId>
 			<version>3.0.0-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.aggregate</groupId>
+			<artifactId>jetty-all</artifactId>
+			<version>9.3.0.M0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -148,6 +151,48 @@
 					</filesets>
 				</configuration>
 			</plugin>
+			
+	<!-- 		<plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-shade-plugin</artifactId>
+      <version>1.6</version>
+      <configuration>
+        <createDependencyReducedPom>true</createDependencyReducedPom>
+        <filters>
+          <filter>
+            <artifact>*:*</artifact>
+            <excludes>
+              <exclude>META-INF/*.SF</exclude>
+              <exclude>META-INF/*.DSA</exclude>
+              <exclude>META-INF/*.RSA</exclude>
+            </excludes>
+          </filter>
+        </filters>
+      </configuration>
+ 
+      <executions>
+        <execution>
+          <phase>package</phase>
+          <goals>
+            <goal>shade</goal>
+          </goals>
+          <configuration>
+            <transformers>
+              <transformer
+                implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+              <transformer
+                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                <manifestEntries>
+                  <Main-Class>com.familiaborges.danilo.apm.Main</Main-Class>
+                </manifestEntries>
+              </transformer>
+            </transformers>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin> -->
+   
+			  
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
@@ -190,6 +235,7 @@
 							<!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module> 
 								</modules> -->
 						</configuration>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>clean</goal>
 							<goal>resources</goal>
@@ -201,12 +247,43 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.5.4</version>
+				<configuration>
+					<finalName>webui</finalName>
+					
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					
+					<archive>
+					  <manifest>
+						<mainClass>com.familiaborges.danilo.apm.Main</mainClass>
+					  </manifest>
+					</archive>
+ 
+				</configuration>
+				<executions>
+				  <execution>
+					<id>make-assembly</id>
+                                       
+					<phase>package</phase> 
+					<goals>
+						<goal>single</goal>
+					</goals>
+				  </execution>
+				</executions>
+			</plugin>
 
 			<plugin>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>9.1.1.v20140108</version>
 			</plugin>
+			
+			
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -266,6 +343,10 @@
 				<directory>src/main/resources</directory>
 			</resource>
 
+			<resource>				
+				<directory>src/main/webapp</directory>
+			</resource>
+			
 			<resource>
 				<filtering>false</filtering>
 				<directory>src/main/java</directory>

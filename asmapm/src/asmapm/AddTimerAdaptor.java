@@ -1,5 +1,7 @@
 package asmapm;
 
+import java.util.logging.Logger;
+
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -13,6 +15,7 @@ import asmapm.adapters.AddTimerSQLMethodAdapter;
 import asmapm.adapters.FilterMethodAdapter;
 import asmapm.adapters.HttpClientMethodAdapter;
 import asmapm.adapters.ServletMethodAdapter;
+import asmapm.adapters.TesteMethodAdder;
 import asmapm.config.ClassesConfig;
 
 public class AddTimerAdaptor extends ClassVisitor {
@@ -23,6 +26,8 @@ public class AddTimerAdaptor extends ClassVisitor {
 	private boolean isServlet = false;
 	private ApmType apmType;
 
+	private Logger log = Logger.getLogger(this.getClass().getName());
+	
 	public AddTimerAdaptor(ClassVisitor cv, ApmType apmType) {
 		super(Opcodes.ASM4, cv);
 		
@@ -39,6 +44,11 @@ public class AddTimerAdaptor extends ClassVisitor {
 			this.isServlet = true;
 
 			break;
+		case FILTER:
+			// System.out.println("is SERVLET" + owner);
+			this.isFilter = true;
+
+			break;
 		default:
 			break;
 		}
@@ -50,13 +60,7 @@ public class AddTimerAdaptor extends ClassVisitor {
 		cv.visit(version, access, name, signature, superName, interfaces);
 		owner = name;
 		isInterface = (access & Opcodes.ACC_INTERFACE) != 0;
-		for (final String interfaceName : interfaces) {
-
-			if (interfaceName.equals("javax/servlet/Filter")) {
-				this.isFilter = true;
-			}
-
-		}
+				
 	}
 
 	@Override
@@ -77,7 +81,7 @@ public class AddTimerAdaptor extends ClassVisitor {
 					&& !isConstructor) {
 				System.out.println("Metodo SERVLET instrumentalizada: " + owner
 						+ "::" + name);
-				
+				log.fine("Servlet method instrumented: " + owner + "::" + name);
 				ServletMethodAdapter sma = new ServletMethodAdapter(mv, owner,
 						name, access, desc);
 				sma.aa = new AnalyzerAdapter(owner, access, name, desc, sma);
@@ -110,9 +114,14 @@ public class AddTimerAdaptor extends ClassVisitor {
 
 		if (isFilter) {
 
-			/*
-			 * System.out.println("Metodo do FILTER: "+ owner +"::"+name);
-			 */
+			if (name.equals("doFilter")) {
+				
+				FilterMethodAdapter fma = new FilterMethodAdapter(mv, owner, name, access, desc);
+				fma.aa = new AnalyzerAdapter(owner, access, name, desc, fma);
+				fma.lvs = new LocalVariablesSorter(access, desc, fma.aa);
+				return fma.lvs;
+
+			}
 
 		}
 
@@ -126,8 +135,8 @@ public class AddTimerAdaptor extends ClassVisitor {
 		}
 
 		if (isJdbc) {
-			/*System.out.println("Eh uma interface " +isInterface);
-			System.out.println("Nome do método: " +name);
+			
+			/*System.out.println("Nome do método: " +name);
 			System.out.println("Se é contrutor: " +isConstructor);*/
 			if (!isInterface
 					&& mv != null

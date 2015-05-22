@@ -7,21 +7,20 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.logging.Logger;
+import java.util.Collections;
+import java.util.Map;
 
 public class CallStackTrace implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-
-
-	
+	private static final long serialVersionUID = 1L;	
 	
 	private List<MethodCall> methodCalls = null;
-	private HashMap<String, Object> extraData;
+	private Map<String, Object> extraData;
 	private boolean buildingTrace = false;
 	private int count = 0;
 	private int level = 0;
 	private long theadId;
+	private String asmapmTraceId;
 	private long startTimestamp;
 	private long stopTimestamp;
 	private String classType;
@@ -29,25 +28,44 @@ public class CallStackTrace implements Serializable {
 	private String className;
 	private String methodName;
 	private boolean alreadyStarted;
+	private EventType eventType;
 
 	public CallStackTrace() {
 		theadId = Thread.currentThread().getId();
 		
-		methodCalls = new ArrayList<MethodCall>();
+		methodCalls = Collections.synchronizedList(new ArrayList<MethodCall>());
 		
-		extraData = new HashMap<String, Object>();
+		extraData = Collections.synchronizedMap(new HashMap<String, Object>());
 		
 	}
 
+	public CallStackTrace(CallStackTrace cst) {
+		this.methodCalls = cst.getMethodCalls();
+		this.extraData = cst.extraData;
+		this.count = cst.getCount();
+		this.level = cst.getLevel();
+		this.theadId = cst.getTheadId();
+		
+		this.startTimestamp = cst.getStartTimestamp();
+		this.stopTimestamp = cst.getStopTimestamp();
+		this.classType = cst.getClassType();
+		this.path = cst.getPath();
+		this.className = cst.getClassName();
+		this.methodName = cst.getMethodName();
+		this.alreadyStarted = cst.isAlreadyStarted();
+		this.asmapmTraceId = cst.getAsmapmTraceId();
+		this.eventType = cst.getEventType();
+		
+	}
+	
 	public List<MethodCall> getMethodCalls() {
 		if (methodCalls == null) {
-			methodCalls = new ArrayList<MethodCall>();
-			System.out.println("Criando lista de metodos extradata");
+			methodCalls = new ArrayList<MethodCall>();			
 		}
 		return methodCalls;
 	}
 
-	public HashMap<String, Object> getExtraData() {
+	public Map<String, Object> getExtraData() {
 		if(extraData==null) {
 			extraData = new HashMap<String, Object>();
 			
@@ -104,6 +122,14 @@ public class CallStackTrace implements Serializable {
 	public void decLevel() {
 		level--;
 	}
+	
+	public String getAsmapmTraceId() {
+		return asmapmTraceId;
+	}
+
+	public void setAsmapmTraceId(String asmapmTraceId) {
+		this.asmapmTraceId = asmapmTraceId;
+	}
 
 	public long getStartTimestamp() {
 		return startTimestamp;
@@ -119,6 +145,10 @@ public class CallStackTrace implements Serializable {
 
 	public void setStopTimestamp(long stopTimestamp) {
 		this.stopTimestamp = stopTimestamp;
+	}
+	
+	public long getExecutionTime() {
+		return getStopTimestamp()-getStartTimestamp();
 	}
 
 	public long getTheadId() {
@@ -159,6 +189,14 @@ public class CallStackTrace implements Serializable {
 
 	public void setMethodName(String methodName) {
 		this.methodName = methodName;
+	}	
+
+	public EventType getEventType() {
+		return eventType;
+	}
+
+	public void setEventType(EventType eventType) {
+		this.eventType = eventType;
 	}
 
 	public String getOnStringFormat() {
@@ -247,7 +285,7 @@ public class CallStackTrace implements Serializable {
 			while((iteDadMethods.hasPrevious()) && level !=0){
 				MethodCall dadMethod = iteDadMethods.previous();
 				j--;
-				if((dadMethod.getLevel()==(level-1))) {
+				if((dadMethod.getLevel()<=(level-1))) {
 					m.setIndexOfDadMethodCall(j);
 					this.getMethodCalls().set(i, m);
 					break;

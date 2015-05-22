@@ -1,7 +1,13 @@
 package asmapm.model;
 
+import java.io.IOException;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.commons.lang3.SerializationUtils;
+
+import com.google.gson.Gson;
 
 import asmapm.Agent;
 import asmapm.ApmType;
@@ -21,27 +27,43 @@ public class CallStackTraceBuilder {
 
 	public CallStackTrace startprofile(String cName, String mName) {
 		CallStackTrace state = traceBuilder.get();
+
 		if (!state.isBuildingTrace()) {
+
 			state.setBuildingTrace(true);
 			state.resetCallStack();
 			state.setClassName(cName);
 			state.setMethodName(mName);
+			state.setStartTimestamp(System.currentTimeMillis());
+			state.setAsmapmTraceId(UUID.randomUUID().toString());
+			state.setStopTimestamp(0);
+			state.setEventType(EventType.START_REQUEST);
+			state.incCount();
+			// Send init trace
+			log.log(Level.INFO, "START PROFILE: " + cName + "::" + mName
+					+ " Thread ID: " + Thread.currentThread().getId()
+					+ " Thread Name: " + Thread.currentThread().getName()
+					+ " ID: " + state.getAsmapmTraceId());
+			CallStackTrace cst = new CallStackTrace(state);
+			Agent.getInstance().getQueue().add(cst);
+
 			return state;
 		} else {
+			state.incCount();
+			state.incLevel();
 			return state;
 		}
 		// System.out.println("=========COMECOU O PROFILE===========");
 
 	}
 
-	public void endprofile(String cName, String mName, long threshold,
+	public void endprofile(String cName, String mName, long threshold, boolean didStartMonitor,
 			long executionTime) {
 		CallStackTrace state = traceBuilder.get();
 
-		if ((state.getLevel() == 0) && (state.getClassName().equals(cName))
-				&& (state.getMethodName().equals(mName))) {// Is the end of profile
-															
-			
+		if (didStartMonitor) {// Is the end of
+															// profile
+
 			MethodCall method = new MethodCall();
 
 			method.setClassName(cName);
@@ -50,15 +72,45 @@ public class CallStackTraceBuilder {
 			method.setLevel(state.getLevel());
 
 			state.getMethodCalls().add(method);
-			
-			log.log(Level.INFO, "END PROFILE " + cName + "::" + mName);
-			System.out.println();
-			System.out.println();
-			System.out.println();
-			state.setStopTimestamp(System.currentTimeMillis());
+
+			log.log(Level.INFO,
+					"END PROFILE " + cName + "::" + mName + "Spent Time: "
+							+ executionTime + " Thread ID"
+							+ Thread.currentThread().getId() + "ID:"
+							+ state.getAsmapmTraceId());
+
 			state.setBuildingTrace(false);
-			// Send.getInstance().testSend(state);
-			Agent.getInstance().getQueue().add(state);
+			state.setStopTimestamp(System.currentTimeMillis());
+
+			/*
+			 * log.info("Start timestamp: " + state.getStartTimestamp());
+			 * log.info("Stop timestamp: " + state.getStopTimestamp());
+			 * log.info("Execution time do state: " + state.getExecutionTime());
+			 * log.info("Execution time calulado: " + executionTime);
+			 */
+			if (state.getExecutionTime() > Agent.lowThreshold) {
+
+				log.info("Evento acicionado a fila de envio com execution time de "
+						+ state.getExecutionTime());
+				state.setEventType(EventType.END_REQUEST_WITH_EVENT);
+				CallStackTrace cst = new CallStackTrace(state);
+				log.info("Count do state: " + state.getCount());
+				log.info("Count do arraylist de metodos: "
+						+ state.getMethodCalls().size());
+				try {
+					log.info("Tamanho do objeto CallStackTrace em bytes: "
+							+ Agent.sizeof(state));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Agent.getInstance().getQueue().add(cst);
+			} else {
+				CallStackTrace cst = new CallStackTrace();
+				cst.setAsmapmTraceId(state.getAsmapmTraceId());
+				cst.setEventType(EventType.END_REQUEST_NO_EVENT);
+				Agent.getInstance().getQueue().add(cst);
+			}
 		} else {
 			leave(cName, mName, Agent.lowThreshold, executionTime);
 		}
@@ -66,7 +118,7 @@ public class CallStackTraceBuilder {
 
 	}
 
-	public void enter(String methodName, String methodSignature,
+	public void enter(String mName, String methodSignature,
 			String fullyQualifiedClassname, String cName, String path,
 			long timestamp) {
 		// System.out.println("\t\tCallStackTraceBuilder enter from: " +
@@ -75,11 +127,17 @@ public class CallStackTraceBuilder {
 		CallStackTrace state = traceBuilder.get();
 
 		state.incCount();
-		// System.out.println("Level Enter: " + state.getLevel());
-		// System.out.println("LEVEL: "+ state.getLevel() + " - " +
-		// classType+"::"+methodName);
+
 		state.incLevel();
 
+		/*if (state.isBuildingTrace()) {
+			log.log(Level.INFO,
+					"ENTER METHOD: " + cName + "::" + mName + " Thread ID"
+							+ Thread.currentThread().getId() + " Thread Name"
+							+ Thread.currentThread().getName() + " ID:"
+							+ state.getAsmapmTraceId() + " Level: "
+							+ state.getLevel());
+		}*/
 		/*
 		 * if ((state.getCount() > 10000) && (state.isBuildingTrace())) {
 		 * System.out.println("********************"); System.out
@@ -112,6 +170,15 @@ public class CallStackTraceBuilder {
 
 		}
 
+		/*if (state.isBuildingTrace()) {
+			log.log(Level.INFO,
+					"LEAVE METHOD: " + cName + "::" + mName + " Thread ID"
+							+ Thread.currentThread().getId() + " Thread Name"
+							+ Thread.currentThread().getName() + " ID:"
+							+ state.getAsmapmTraceId() + " Level: "
+							+ state.getLevel());
+		}*/
+
 		if (executionTime > 10) {
 			MethodCall method = new MethodCall();
 			method.setClassName(cName);
@@ -120,8 +187,10 @@ public class CallStackTraceBuilder {
 			method.setLevel(state.getLevel());
 
 			state.getMethodCalls().add(method);
-			log.info("Added to call tree: " + cName + "::" + mName
-					+ " + level:" + state.getLevel());
+			/*
+			 * log.info("Added to call tree: " + cName + "::" + mName +
+			 * " + level:" + state.getLevel());
+			 */
 		}
 		state.decLevel();
 
@@ -142,8 +211,10 @@ public class CallStackTraceBuilder {
 
 			state.getMethodCalls().add(method);
 
-			log.info("Added to call tree: " + cName + "::" + mName
-					+ " + level:" + state.getLevel());
+			/*
+			 * log.info("Added to call tree: " + cName + "::" + mName +
+			 * " + level:" + state.getLevel());
+			 */
 		}
 		// System.out.println("LEVEL: "+ state.getLevel() + " - " +
 		// cName+"::"+mName+" Tempo: " + executionTime + " SQL: " + sql);
@@ -170,26 +241,12 @@ public class CallStackTraceBuilder {
 
 	}
 
-	public void leave(String cName, String mName, long threshold,
-			long executionTime, String sql) {
+	public void leaveSql(String cName, String mName, long threshold,
+			long executionTime, String sql, ApmType apmType) {
 
 		CallStackTrace state = traceBuilder.get();
 		if (!state.isBuildingTrace()) {
 			return;
-		}
-
-		if (executionTime > threshold) {
-
-			// state.decCount();
-
-		} else {
-			/*
-			 * System.out.println("Classe:" + cName + " \n Metodo:" + mName +
-			 * " \n Count:" + state.getCount() + " \n Level: " +
-			 * state.getLevel() + "ThreadID" + Thread.currentThread().getId() +
-			 * "SQL: " + sql);
-			 */
-
 		}
 
 		MethodCall method = new MethodCall();
@@ -197,12 +254,11 @@ public class CallStackTraceBuilder {
 		method.setMethodName(mName);
 		method.setExecutionTime(executionTime);
 		method.setLevel(state.getLevel());
+		method.setTypeData(sql);
 		method.setSql(sql);
-
+		method.setType(apmType);
 		state.getMethodCalls().add(method);
 
-		// System.out.println("LEVEL: "+ state.getLevel() + " - " +
-		// cName+"::"+mName+" Tempo: " + executionTime + " SQL: " + sql);
 		state.decLevel();
 
 	}
@@ -225,6 +281,11 @@ public class CallStackTraceBuilder {
 	public CallStackTrace getState() {
 		CallStackTrace state = traceBuilder.get();
 		return state;
+	}
+
+	public String getAsmapmTraceId() {
+		CallStackTrace state = traceBuilder.get();
+		return state.getAsmapmTraceId();
 	}
 
 }

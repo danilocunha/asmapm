@@ -52,8 +52,7 @@ public class TesteAdaptor extends ClassVisitor {
 		MethodVisitor mv = cv.visitMethod(access, name, desc, signature,
 				exceptions);		
 		if (name.equals("doFilter")) {
-			System.out.println("Acheiiiiiii um Metodo FILTER: "+ owner
-			  +"::"+name+"::"+desc);
+			
 			TesteMethodAdder tma = new TesteMethodAdder(mv, owner, name, access, desc);
 			tma.aa = new AnalyzerAdapter(owner, access, name, desc, tma);
 			tma.lvs = new LocalVariablesSorter(access, desc, tma.aa);

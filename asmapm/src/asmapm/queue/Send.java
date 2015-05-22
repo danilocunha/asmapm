@@ -3,8 +3,6 @@ package asmapm.queue;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import javax.xml.stream.FactoryConfigurationError;
-
 import org.apache.commons.lang3.SerializationUtils;
 
 import asmapm.Agent;

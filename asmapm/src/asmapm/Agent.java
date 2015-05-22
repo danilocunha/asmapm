@@ -1,7 +1,9 @@
 package asmapm;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.lang.instrument.Instrumentation;
 import java.lang.management.ManagementFactory;
 import java.net.MalformedURLException;
@@ -13,7 +15,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,7 +40,10 @@ public class Agent {
 	
 	private static Agent agent;
 
-	public static long lowThreshold = 200;
+	public static long lowThreshold = 2000;
+	
+	private static final AtomicLong LAST_TIME_MS = new AtomicLong(0);
+	
 	
 	private LinkedBlockingQueue<CallStackTrace> queue;
 	
@@ -70,6 +77,7 @@ public class Agent {
 
 			this.queue = new LinkedBlockingQueue<CallStackTrace>(1000);			
 			Thread t = new Thread(new AssyncRabbitMQSender());
+			t.setName("ASMAPM Sender Thread");
 	        t.start();
 
 		} catch (Exception e) {
@@ -88,28 +96,40 @@ public class Agent {
 	}
 	
 	public static void addExtraData(String key, Object value) {
-		log.log(Level.INFO, "Add extra data with key: " + key + " an value " + value);
+		//log.log(Level.INFO, "Add extra data with key: " + key + " an value " + value);
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().addExtraData(key, value);
 	}
 
 	public static boolean startprofile(String cName, String mName) {
 		CallStackTrace state = CallStackTraceBuilderFactory.getCallStackTraceBuilder().getState();
-		if(!state.isBuildingTrace()) {
-			log.log(Level.INFO, "START PROFILE: " + cName + "::" + mName + " Thread ID" + Thread.currentThread().getId());
+		if(!state.isBuildingTrace()) {			
 			CallStackTraceBuilderFactory.getCallStackTraceBuilder().startprofile(
 					mName, cName);
 			return true;
 		} else {
 			enter(cName, mName);
-			log.log(Level.INFO, "PROFILE JA EXISTENTE PARA CHAMADA: " + cName + "::" + mName);
-			log.log(Level.INFO, "PROFILE JA INICIOU EM: " + state.getClassName() + "::" + state.getMethodName());
+			//log.log(Level.INFO, "PROFILE JA EXISTENTE PARA CHAMADA: " + cName + "::" + mName);
+			//log.log(Level.INFO, "PROFILE JA INICIOU EM: " + state.getClassName() + "::" + state.getMethodName());
 		}
 		return false;		
 
 	}
+	
+	public static int sizeof(Object obj) throws IOException {
 
+		ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(
+				byteOutputStream);
+
+		objectOutputStream.writeObject(obj);
+		objectOutputStream.flush();
+		objectOutputStream.close();
+
+		return byteOutputStream.toByteArray().length;
+	}
+	
 	public static void startprofile(String cName, String mName, Object object) {
-		log.log(Level.INFO, "START PROFILE " + cName + "::" + mName);
+		//log.log(Level.INFO, "START PROFILE " + cName + "::" + mName);
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().startprofile(
 				mName, cName);
 
@@ -119,17 +139,25 @@ public class Agent {
 			long executionTime) {
 		
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().endprofile(
-				mName, cName, lowThreshold, executionTime);
+				mName, cName, lowThreshold, false, executionTime);
+
+	}
+	
+	public static void endprofile(String cName, String mName, boolean didStartMonitor,
+			long executionTime) {
+		
+		CallStackTraceBuilderFactory.getCallStackTraceBuilder().endprofile(
+				mName, cName, lowThreshold, didStartMonitor, executionTime);
 
 	}
 
-	public static void endprofile(String cName, String mName,
+	public static void endprofile(String cName, String mName, boolean didStartMonitor,
 			long executionTime, RuntimeException e) {
 		log.log(Level.INFO, "END PROFILE - RUNTIMEEXCEPTION" + cName + "::" + mName);
 		//log.log(Level.INFO, "Context Path: " + CallStackTraceBuilderFactory.getCallStackTraceBuilder().g);
 		e.printStackTrace();
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().endprofile(
-				mName, cName, lowThreshold, executionTime);
+				mName, cName, lowThreshold, didStartMonitor, executionTime);
 
 	}
 
@@ -166,14 +194,7 @@ public class Agent {
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().leave(cName,
 				mName, lowThreshold, time);
 
-	}
-
-	public static void leave(String cName, String mName, long time, String sql) {
-		//log.log(Level.INFO, "LEAVE METHOD WITH SQL CALL:" + cName + "::" + mName+ " - " + sql);
-		CallStackTraceBuilderFactory.getCallStackTraceBuilder().leave(cName,
-				mName, lowThreshold, time, sql);
-
-	}
+	}	
 	
 	public static void leaveHttpClient(String cName, String mName, long time, Object url) {
 		//log.log(Level.INFO, "LEAVE METHOD WITH SQL CALL:" + cName + "::" + mName+ " - " + sql);
@@ -182,11 +203,22 @@ public class Agent {
 
 	}
 	
+	public static void leaveSql(String cName, String mName, long time, Object sql) {
+		//log.info("LEAVE METHOD WITH SQL CALL:" + cName + "::" + mName+ " - " + sql);
+		CallStackTraceBuilderFactory.getCallStackTraceBuilder().leaveSql(cName,
+				mName, lowThreshold, time, sql.toString(), ApmType.JDBC);
+
+	}
+	
 	public static void leave(String cName, String mName, long time, ApmType type) {
 		//log.log(Level.INFO, "LEAVE METHOD WITH SQL CALL:" + cName + "::" + mName+ " - " + sql);
 		CallStackTraceBuilderFactory.getCallStackTraceBuilder().leave(cName,
 				mName, lowThreshold, time, type);
 
+	}
+	
+	public static String getAsmapmTraceId() {
+		return CallStackTraceBuilderFactory.getCallStackTraceBuilder().getAsmapmTraceId();
 	}
 
 }

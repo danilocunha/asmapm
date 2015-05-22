@@ -9,6 +9,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import asmapm.Agent;
+
 public class HelloFilter implements Filter {
 
 	private FilterConfig config;
@@ -20,7 +22,9 @@ public class HelloFilter implements Filter {
 
 	public void doFilter(ServletRequest req, ServletResponse arg1,
 			FilterChain arg2) throws IOException, ServletException {
-
+		
+		boolean didStartMonitor = false;
+		
 		System.out.println("serverName: " + req.getServerName());
 		System.out.println("serverPort: " + req.getServerPort());		
 		System.out.println("serverUrl: " + ((javax.servlet.http.HttpServletRequest) req).getSession().getServletContext().getServerInfo());
@@ -31,6 +35,7 @@ public class HelloFilter implements Filter {
 			System.out.println("ServerInfo: "
 					+ config.getServletContext().getServerInfo());
 		}
+		Agent.endprofile("", "", didStartMonitor, 100);
 
 	}
 

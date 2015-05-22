@@ -11,6 +11,7 @@ public class AddTimerMethodAdapter extends LocalVariablesSorter {
 	private int time;
 	private String cName;
 	private String mName;
+	private int asmapmTraceId;
 
 	public AddTimerMethodAdapter(MethodVisitor mv, String cName, String mName, int access, String desc) {
 		super(Opcodes.ASM4, access, desc, mv);

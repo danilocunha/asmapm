@@ -52,12 +52,17 @@ public class AddTimerSQLMethodAdapter extends LocalVariablesSorter {
 			mv.visitInsn(Opcodes.LSUB);
 			
 			super.visitVarInsn(Opcodes.ALOAD, 0);
-			super.visitFieldInsn(Opcodes.GETFIELD, cName, "sql", "Ljava/lang/String;"); 
+			getSqlStatementField(); 
 			super.visitMethodInsn(Opcodes.INVOKESTATIC,
-					 "asmapm/Agent", "leave",
-					 "(Ljava/lang/String;Ljava/lang/String;JLjava/lang/String;)V", false);
+					 "asmapm/Agent", "leaveSql",
+					 "(Ljava/lang/String;Ljava/lang/String;JLjava/lang/Object;)V", false);
 		}
 		super.visitInsn(opcode);
+	}
+
+	private void getSqlStatementField() {
+		
+		super.visitFieldInsn(Opcodes.GETFIELD, cName, "sqlCommand", "Ljava/lang/String;");
 	}
 
 	@Override

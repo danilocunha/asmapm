@@ -14,6 +14,7 @@ public class TesteMethodAdder extends MethodVisitor {
 	
 	private int time;
 	private int exception;
+	private int didStartMonitor;
 
 	private String cName;
 	private String mName;
@@ -36,6 +37,10 @@ public class TesteMethodAdder extends MethodVisitor {
 		
 		exception = lvs.newLocal(Type.getType(RuntimeException.class));
 		time = lvs.newLocal(Type.LONG_TYPE);				
+		didStartMonitor = lvs.newLocal(Type.BOOLEAN_TYPE);
+		
+		mv.visitInsn(Opcodes.ICONST_0);
+		mv.visitVarInsn(Opcodes.ISTORE, didStartMonitor);
 		
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
 				"currentTimeMillis", "()J", false);
@@ -46,12 +51,20 @@ public class TesteMethodAdder extends MethodVisitor {
 		super.visitLdcInsn(this.mName);
 		super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
 				"startprofile", "(Ljava/lang/String;Ljava/lang/String;)Z", false);
+		
 		super.visitJumpInsn(Opcodes.IFEQ, isNotStart);
-
+		
+		
+		
+		
+		
+		
+		mv.visitInsn(Opcodes.ICONST_1);
+		mv.visitVarInsn(Opcodes.ISTORE, didStartMonitor);//Set as init monitor point		
 		getFilterData();
+		
 		mv.visitLabel(isNotStart);
 		mv.visitLabel(lTryBlockStart);
-		
 		
 		
 
@@ -103,6 +116,7 @@ public class TesteMethodAdder extends MethodVisitor {
 			
 			super.visitLdcInsn(this.cName);
 			super.visitLdcInsn(this.mName);
+			mv.visitVarInsn(Opcodes.ILOAD, didStartMonitor);
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
 					"currentTimeMillis", "()J", false);
 			mv.visitVarInsn(Opcodes.LLOAD, time);
@@ -112,7 +126,7 @@ public class TesteMethodAdder extends MethodVisitor {
 
 			super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
 					"endprofile",
-					"(Ljava/lang/String;Ljava/lang/String;J)V", false);
+					"(Ljava/lang/String;Ljava/lang/String;ZJ)V", false);
 		}
 		super.visitInsn(opcode);
 	}
@@ -128,6 +142,7 @@ public class TesteMethodAdder extends MethodVisitor {
 		mv.visitVarInsn(Opcodes.ASTORE, exception);
 		super.visitLdcInsn(this.cName);
 		super.visitLdcInsn(this.mName);
+		mv.visitVarInsn(Opcodes.ILOAD, didStartMonitor);
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
 				"currentTimeMillis", "()J", false);
 		mv.visitVarInsn(Opcodes.LLOAD, time);
@@ -136,7 +151,7 @@ public class TesteMethodAdder extends MethodVisitor {
 
 		super.visitMethodInsn(Opcodes.INVOKESTATIC, "asmapm/Agent",
 				"endprofile",
-				"(Ljava/lang/String;Ljava/lang/String;JLjava/lang/RuntimeException;)V", false);
+				"(Ljava/lang/String;Ljava/lang/String;ZJLjava/lang/RuntimeException;)V", false);
 
 		mv.visitInsn(Opcodes.ATHROW);
 		super.visitMaxs(maxStack, maxLocals);

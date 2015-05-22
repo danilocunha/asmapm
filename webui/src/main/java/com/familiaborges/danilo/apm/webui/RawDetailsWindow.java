@@ -69,6 +69,11 @@ public class RawDetailsWindow extends Window {
 		label.setSizeUndefined();
 		label.setCaption("Id da Execução");
 		fields.addComponent(label);
+		
+		label = new Label(e.getCallStackTrace().getExtraData().get("serverUrl").toString());
+		label.setSizeUndefined();
+		label.setCaption("URI");
+		fields.addComponent(label);
 
 		/*
 		 * label = new

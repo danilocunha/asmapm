@@ -3,7 +3,7 @@
 <Configure class="org.eclipse.jetty.webapp.WebAppContext">
     <Set name="contextPath">/testeservlet</Set>
     
-    <New id="DSAgencia" class="org.eclipse.jetty.plus.jndi.Resource">		
+    <!-- <New id="DSAgencia" class="org.eclipse.jetty.plus.jndi.Resource">		
 		<Arg></Arg>
 		<Arg>jdbc/SisnewsInternetDS</Arg>
 		<Arg>
@@ -22,10 +22,10 @@
 		<Arg>
 			<New class="org.apache.commons.dbcp.BasicDataSource">
 				<Set name="driverClassName">net.sourceforge.jtds.jdbc.Driver</Set>
-				<!--
+				
 				<Set name="url">jdbc:jtds:sqlserver://aldebaran.redecamara.camara.gov.br:3206/sqlDesEnquete</Set>
-				 -->
-				 <!-- <Set name="url">jdbc:jtds:sqlserver://aldebaran.redecamara.camara.gov.br:1826/SqlHomEnquete</Set> -->
+				
+				 <Set name="url">jdbc:jtds:sqlserver://aldebaran.redecamara.camara.gov.br:1826/SqlHomEnquete</Set>
 				 <Set name="url">jdbc:jtds:sqlserver://localhost:1433/SqlHomEnquete</Set>
 				<Set name="username">usr_sisnews</Set>
 				<Set name="password">123456</Set>
@@ -44,5 +44,5 @@
 				<Set name="password">usr_sisnews</Set>
 			</New>
 		</Arg>
-	</New>
+	</New> -->
 </Configure>

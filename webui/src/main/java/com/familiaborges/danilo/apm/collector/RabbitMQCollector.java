@@ -19,7 +19,9 @@ import asmapm.model.CallStackTrace;
 import asmapm.model.CallStackTraceBuilder;
 
 import com.familiaborges.danilo.apm.dao.ExecutionDAO;
+import com.familiaborges.danilo.apm.dao.RequestDAO;
 import com.familiaborges.danilo.apm.dto.Execution;
+import com.familiaborges.danilo.apm.dto.Request;
 import com.familiaborges.danilo.apm.util.WebUIConfig;
 import com.google.gwt.user.rebind.rpc.SerializationUtils;
 import com.mchange.v2.sql.filter.RecreatePackage;
@@ -36,7 +38,7 @@ public class RabbitMQCollector implements Runnable {
 
 	private Logger log = Logger.getLogger(getClass().getName());
 
-	private static final AtomicLong LAST_TIME_MS = new AtomicLong();
+	private static final AtomicLong LAST_TIME_MS = new AtomicLong(0);
 
 	private ConnectionFactory factory;
 	Connection connection;
@@ -62,8 +64,7 @@ public class RabbitMQCollector implements Runnable {
 			// String message = "Hello World!";
 			consumer = new QueueingConsumer(channel);
 			channel.basicConsume(QUEUE_NAME, true, consumer);
-			System.out
-			.println(" [*] Conexao efetuada.");
+			System.out.println(" [*] Conexao efetuada.");
 		} catch (IOException e) {
 			return false;
 		}
@@ -113,10 +114,10 @@ public class RabbitMQCollector implements Runnable {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		CallStackTrace state = org.apache.commons.lang3.SerializationUtils
 				.deserialize(delivery.getBody());
-		System.out.println(dateFormat.format(new Date(state.getStopTimestamp())));
-		System.out
-				.println(dateFormat.format(new Date(state.getStartTimestamp())));
-		//System.out.println(state.getStartTimestamp());
+		System.out.println("#############################################");
+		System.out.println(state.getStopTimestamp());
+		System.out.println(state.getStartTimestamp());
+		// System.out.println(state.getStartTimestamp());
 		try {
 			System.out.println(sizeof(state) + " Bytes");
 		} catch (IOException e) {
@@ -124,43 +125,57 @@ public class RabbitMQCollector implements Runnable {
 			e.printStackTrace();
 		}
 
-		long duration = state.getStopTimestamp() - state.getStartTimestamp();
-		System.out.println("URL: "
-				+ state.getExtraData().get("serverUrl") + " - Time Spent: "+ duration);
-		/*System.out.println("serverName: "
-				+ state.getExtraData().get("serverName"));
-		System.out.println("serverPort: "
-				+ state.getExtraData().get("serverPort"));
-		System.out.println("serverInfo: "
-				+ state.getExtraData().get("serverInfo"));
-		System.out.println("size: " + state.getExtraData().size());
-		System.out.println("duration: " + (state.getStopTimestamp() - state.getStartTimestamp()));*/
-
-		state.printOnTextFormat();
-		ExecutionDAO dao = new ExecutionDAO();
-		Execution dto = new Execution();
-		dto.setIdExecution(uniqueCurrentTimeMS(state.getStartTimestamp()));
-		dto.setStartTimeMillis(state.getStartTimestamp());
-		dto.setDuration(state.getStopTimestamp() - state.getStartTimestamp());
+		long duration = state.getExecutionTime();
+		System.out.println("UUID: " + state.getAsmapmTraceId());
+		System.out.println("ClassName: " + state.getClassName() + " - MethodNmae: " + state.getMethodName() + " Type: " + state.getEventType());
+		System.out.println("URL: " + state.getExtraData().get("serverUrl")
+				+ " - Time Spent: " + duration);
+		
+		System.out.println("#############################################");
 		/*
-		 * ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-		 * ObjectOutputStream objOut = new ObjectOutputStream(byteOut);
-		 * objOut.writeObject(state); objOut.close(); byteOut.close();
-		 * 
-		 * byte[] bytes = byteOut.toByteArray();
+		 * System.out.println("serverName: " +
+		 * state.getExtraData().get("serverName"));
+		 * System.out.println("serverPort: " +
+		 * state.getExtraData().get("serverPort"));
+		 * System.out.println("serverInfo: " +
+		 * state.getExtraData().get("serverInfo")); System.out.println("size: "
+		 * + state.getExtraData().size()); System.out.println("duration: " +
+		 * (state.getStopTimestamp() - state.getStartTimestamp()));
 		 */
-		dto.setCallStackTrace(state);
-		dao.save(dto);
-	}
-
-	public static long uniqueCurrentTimeMS(long timeMillis) {
-		long now = timeMillis;
-		while (true) {
-			long lastTime = LAST_TIME_MS.get();
-			if (lastTime >= now)
-				now = lastTime + 1;
-			if (LAST_TIME_MS.compareAndSet(lastTime, now))
-				return now;
+		RequestDAO requestDAO = null;
+		Request request = null;
+		switch (state.getEventType()) {
+		case START_REQUEST:
+			requestDAO = new RequestDAO();
+			request = new Request();
+			request.setId(state.getAsmapmTraceId());
+			request.setStartTimeInMillis(state.getStartTimestamp());
+			request.setData(state);
+			requestDAO.save(request);
+			break;
+		case END_REQUEST_NO_EVENT:
+			requestDAO = new RequestDAO();
+			request = new Request();
+			request.setId(state.getAsmapmTraceId());
+			requestDAO.remove(request);
+			break;
+		case END_REQUEST_WITH_EVENT:
+			//state.printOnTextFormat();
+			ExecutionDAO executionDAO = new ExecutionDAO();
+			Execution dto = new Execution();
+			dto.setIdExecution(state.getAsmapmTraceId());
+			dto.setStartTimeMillis(state.getStartTimestamp());
+			dto.setDuration(state.getStopTimestamp()
+					- state.getStartTimestamp());
+			dto.setCallStackTrace(state);
+			executionDAO.save(dto);
+			requestDAO = new RequestDAO();
+			request = new Request();
+			request.setId(state.getAsmapmTraceId());
+			requestDAO.remove(request);
+			break;
+		default:
+			break;
 		}
 	}
 
